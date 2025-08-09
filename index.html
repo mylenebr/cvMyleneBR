@@ -1,0 +1,115 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>CV 3D - Prototype</title>
+  <style>
+    body { margin: 0; overflow: hidden; font-family: sans-serif; }
+    #infoBox {
+      position: absolute;
+      top: 20px; left: 50%;
+      transform: translateX(-50%);
+      background: rgba(0,0,0,0.8);
+      color: white;
+      padding: 10px 20px;
+      border-radius: 8px;
+      display: none;
+      max-width: 300px;
+      text-align: center;
+    }
+  </style>
+</head>
+<body>
+  <div id="infoBox"></div>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r152/three.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/three@0.152.0/examples/js/loaders/FontLoader.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/three@0.152.0/examples/js/geometries/TextGeometry.js"></script>
+  <script>
+    let scene = new THREE.Scene();
+    let camera = new THREE.PerspectiveCamera(75, window.innerWidth/window.innerHeight, 0.1, 1000);
+    let renderer = new THREE.WebGLRenderer({antialias:true});
+    renderer.setSize(window.innerWidth, window.innerHeight);
+    document.body.appendChild(renderer.domElement);
+
+    // Lumière
+    let light = new THREE.PointLight(0xffffff, 1);
+    light.position.set(5,5,5);
+    scene.add(light);
+    scene.add(new THREE.AmbientLight(0x404040));
+
+    // Nom en 3D
+    let loader = new THREE.FontLoader();
+    loader.load('https://threejs.org/examples/fonts/helvetiker_regular.typeface.json', function(font) {
+      let textGeo = new THREE.TextGeometry('MYMY', {
+        font: font,
+        size: 1,
+        height: 0.2
+      });
+      let textMat = new THREE.MeshStandardMaterial({color: 0xff6600});
+      let textMesh = new THREE.Mesh(textGeo, textMat);
+      textMesh.position.set(-3, 2, 0);
+      scene.add(textMesh);
+    });
+
+    // Objets cliquables
+    let objects = [];
+    let materials = [
+      new THREE.MeshStandardMaterial({color: 0x00ff00}),
+      new THREE.MeshStandardMaterial({color: 0x0000ff}),
+      new THREE.MeshStandardMaterial({color: 0xff0000})
+    ];
+    let labels = ["Compétences", "Projets", "Contact"];
+    let infos = [
+      "• C++, Python, Houdini HDK, Three.js<br>• Shading, pipeline VFX",
+      "• Court-métrage FX 2023<br>• Pipeline asset resolver USD",
+      "Email : toi@email.com<br>LinkedIn : linkedin.com/in/tonprofil"
+    ];
+
+    for (let i = 0; i < 3; i++) {
+      let geo = new THREE.SphereGeometry(0.5, 32, 32);
+      let mesh = new THREE.Mesh(geo, materials[i]);
+      mesh.position.set(-2 + i*2, -1, 0);
+      mesh.userData = {label: labels[i], info: infos[i]};
+      scene.add(mesh);
+      objects.push(mesh);
+    }
+
+    camera.position.z = 5;
+
+    // Raycaster pour clic
+    let raycaster = new THREE.Raycaster();
+    let mouse = new THREE.Vector2();
+    let infoBox = document.getElementById('infoBox');
+
+    window.addEventListener('click', (event) => {
+      mouse.x = (event.clientX / window.innerWidth) * 2 - 1;
+      mouse.y = -(event.clientY / window.innerHeight) * 2 + 1;
+      raycaster.setFromCamera(mouse, camera);
+      let intersects = raycaster.intersectObjects(objects);
+      if (intersects.length > 0) {
+        let obj = intersects[0].object.userData;
+        infoBox.innerHTML = `<strong>${obj.label}</strong><br>${obj.info}`;
+        infoBox.style.display = 'block';
+      } else {
+        infoBox.style.display = 'none';
+      }
+    });
+
+    // Animation
+    function animate() {
+      requestAnimationFrame(animate);
+      objects.forEach(o => o.rotation.y += 0.01);
+      renderer.render(scene, camera);
+    }
+    animate();
+
+    // Responsive
+    window.addEventListener('resize', () => {
+      camera.aspect = window.innerWidth/window.innerHeight;
+      camera.updateProjectionMatrix();
+      renderer.setSize(window.innerWidth, window.innerHeight);
+    });
+  </script>
+</body>
+</html>
