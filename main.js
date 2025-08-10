@@ -7,6 +7,7 @@ import { TrackballControls } from 'three/addons/controls/TrackballControls.js';
 let camera, scene, renderer, controls, raycaster, mouse;
 let stars = [];
 
+
 init();
 
 function drawLines()
@@ -166,16 +167,19 @@ function animate() {
 	controls.update();
 	// Spin only hovered stars
 	stars.forEach(star => {
-    if (star.userData.spinning) {
-      // Spin slowly around Y axis
-      star.rotation.y += 0.001; // slow speed
+		if (star.userData.spinning) { 
+			// Spin slowly around Y axis
+			star.rotation.y += 0.001; // slow speed
 
-      // Stop when target reached
-      if (star.rotation.y >= star.userData.targetRotation) {
-        star.rotation.y = star.userData.targetRotation;
-        star.userData.spinning = false;
-      }
-    }
-  });
+			(Math.cos(star.rotation.y)>0) ? star.position.y += 0.005 : star.position.y -= 0.005;
+			
+
+			// Stop when target reached
+			if (star.rotation.y >= star.userData.targetRotation) {
+				star.rotation.y = star.userData.targetRotation;
+				star.userData.spinning = false;
+			}
+		}
+	});
 	renderer.render(scene, camera);
 }
