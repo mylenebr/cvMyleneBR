@@ -7,6 +7,11 @@ import { TrackballControls } from 'three/addons/controls/TrackballControls.js';
 let camera, scene, renderer, controls, raycaster, mouse;
 let stars = [];
 
+// Zoom/click on stars
+let targetStar = null; // the star we clicked
+let zooming = false;
+let zoomStart = null;
+let zoomDuration = 1000; // ms (1s)
 
 init();
 
@@ -77,6 +82,7 @@ function createStar(px, py, pz)
 	const star = new THREE.Mesh( starGeo, materials );
 	star.position.set(px, py, pz);
 	star.userData.isHovered = false;
+	//star.name = `star${i+1}`;
 	return star;
 }
 
@@ -135,6 +141,7 @@ function init() {
 	mouse = new THREE.Vector2();
 
 	window.addEventListener('mousemove', onMouseMove);
+	window.addEventListener('click', onClick);
 	window.addEventListener('resize', onWindowResize);
 }
 
@@ -156,10 +163,31 @@ function onMouseMove(event) {
   });
 }
 
+function onClick(event) {
+  mouse.x = (event.clientX / window.innerWidth) * 2 - 1;
+  mouse.y = -(event.clientY / window.innerHeight) * 2 + 1;
+
+  raycaster.setFromCamera(mouse, camera);
+  const intersects = raycaster.intersectObjects(stars);
+
+  if (intersects.length > 0) {
+    targetStar = intersects[0].object;
+    zooming = true;
+    zoomStart = performance.now();
+    zoomStartPos = camera.position.clone(); // store start position
+  }
+}
+
 function onWindowResize() {
 	camera.aspect = window.innerWidth / window.innerHeight;
 	camera.updateProjectionMatrix();
 	renderer.setSize(window.innerWidth, window.innerHeight);
+}
+
+function easeInOutCubic(t) {
+  return t < 0.5
+    ? 4 * t * t * t
+    : 1 - Math.pow(-2 * t + 2, 3) / 2;
 }
 
 function animate() {
@@ -181,5 +209,24 @@ function animate() {
 			}
 		}
 	});
+
+	// Click star 
+	if (zooming && targetStar) {
+		const now = performance.now();
+		const tLinear = Math.min((now - zoomStart) / zoomDuration, 1);
+		const t = easeInOutCubic(tLinear); // apply easing
+
+		const targetPos = targetStar.position.clone().add(new THREE.Vector3(0, 0, 3));
+		camera.position.lerpVectors(camera.position, targetPos, t);
+
+		camera.lookAt(targetStar.position);
+
+		if (tLinear >= 1) {
+			zooming = false;
+			setTimeout(() => {
+				window.location.href = `${targetStar.name}.html`;
+			}, 300);
+		}
+	}
 	renderer.render(scene, camera);
 }
