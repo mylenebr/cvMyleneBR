@@ -56,7 +56,7 @@ function drawLines()
     }
 }
 
-function createStar(px, py, pz)
+function createStar(px, py, pz, starName)
 {
 	const pts2 = [], numPts = 5;
 	for ( let i = 0; i < numPts * 2; i ++ ) {
@@ -82,7 +82,7 @@ function createStar(px, py, pz)
 	const star = new THREE.Mesh( starGeo, materials );
 	star.position.set(px, py, pz);
 	star.userData.isHovered = false;
-	//star.name = `star${i+1}`;
+	star.name = starName;
 	return star;
 }
 
@@ -123,15 +123,15 @@ function init() {
 	// drawLines();\
 
 	//
-	const star1 = createStar(-250, 50, 10);
+	const star1 = createStar(-250, 50, 10, "star1");
 	scene.add(star1); 
-	const star2 = createStar(-150, -100, 10);
+	const star2 = createStar(-150, -100, 10, "star2");
 	scene.add(star2); 
-	const star3 = createStar(-50, 30, 10);
+	const star3 = createStar(-50, 30, 10, "star3");
 	scene.add(star3); 
-	const star4 = createStar(30, -120, 10);
+	const star4 = createStar(30, -120, 10, "star4");
 	scene.add(star4); 
-	const star5 = createStar(200, 20, 10);
+	const star5 = createStar(200, 20, 10, "star5");
 	scene.add(star5); 
 
 	stars.push(star1); stars.push(star2); stars.push(star3); stars.push(star4); stars.push(star5);
