@@ -53,13 +53,9 @@ function drawStar(px, py, pz)
 {
 	const pts2 = [], numPts = 5;
 	for ( let i = 0; i < numPts * 2; i ++ ) {
-
 		const l = i % 2 == 1 ? 10 : 20;
-
 		const a = i / numPts * Math.PI;
-
 		pts2.push( new THREE.Vector2( Math.cos( a ) * l, Math.sin( a ) * l ) );
-
 	}
 	const shape2 = new THREE.Shape( pts2 );
 	const material2 = new THREE.MeshLambertMaterial( { color: 0xff8000, wireframe: false } );
@@ -76,9 +72,9 @@ function drawStar(px, py, pz)
 		bevelSegments: 1
 	};
 	const geometry3 = new THREE.ExtrudeGeometry( shape2, extrudeSettings3 );
-	const mesh3 = new THREE.Mesh( geometry3, materials );
-	mesh3.position.set( px, py, pz );
-	scene.add( mesh3 ); 
+	const star = new THREE.Mesh( geometry3, materials );
+	star.position.set( px, py, pz );
+	scene.add(star); 
 }
 
 function init() {
