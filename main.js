@@ -6,8 +6,9 @@ import { TrackballControls } from 'three/addons/controls/TrackballControls.js';
 import { FontLoader } from 'three/addons/loaders/FontLoader.js';
 import { TextGeometry } from 'three/addons/geometries/TextGeometry.js';
 
-let camera, scene, renderer, controls, raycaster, mouse;
+let camera, scene, renderer, controls, raycaster, mouse, parameters;
 let stars = [];
+const materials = []; //SF
 
 // Zoom/click on stars
 let targetStar = null; // the star we clicked
@@ -16,47 +17,6 @@ let zoomStart = null;
 let zoomDuration = 1000; // ms (1s)
 
 init();
-
-function drawLines()
-{
-	const linesCount = 5;            // nombre de lignes
-    const length = 12;              // longueur de chaque ligne (axe X)
-    const spacing = 0.7;            // espace vertical entre les lignes
-    const tubeRadius = 0.06;        // rayon du "tube" (épaisseur)
-    const radialSegments = 16;      // qualité du tube
-
-    const material = new THREE.MeshStandardMaterial({ color: 0x111111, metalness: 0.1, roughness: 0.7 });
-
-    for(let i=0;i<linesCount;i++){
-      // CylinderGeometry: (radiusTop, radiusBottom, height, radialSegments)
-      const geom = new THREE.CylinderGeometry(tubeRadius, tubeRadius, length, radialSegments);
-      const mesh = new THREE.Mesh(geom, material);
-
-      // par défaut l'axe principal du cylindre est Y — on le met le long de X
-      mesh.rotation.z = Math.PI / 2;
-
-      // positionner la ligne au bon Y
-      const y = (i - (linesCount-1)/2) * spacing; // centre vertical
-      mesh.position.set(0, y, 0);
-
-      scene.add(mesh);
-    }
-
-    // un petit plan pour repère (optionnel)
-    const grid = new THREE.GridHelper(30, 30, 0xcccccc, 0xeeeeee);
-    grid.rotation.x = Math.PI/2; // plat
-    grid.position.y = -3;
-    grid.visible = false; // cacher par défaut
-    scene.add(grid);
-
-    // responsive
-    window.addEventListener('resize', onResize);
-    function onResize(){
-      camera.aspect = window.innerWidth/window.innerHeight;
-      camera.updateProjectionMatrix();
-      renderer.setSize(window.innerWidth, window.innerHeight);
-    }
-}
 
 function createStar(px, py, pz, starName, starPage)
 {
@@ -115,7 +75,7 @@ loader.load(
     // Attach text to star so it moves/rotates with it
     star.add(textMesh);
   },
-  // onProgress callback
+  	// onProgress callback
 	function ( xhr ) {
 		console.log( (xhr.loaded / xhr.total * 100) + '% loaded' );
 	},
@@ -132,26 +92,64 @@ loader.load(
 
 function init() {
 
-	/*const info = document.createElement( 'div' );
-	info.style.position = 'absolute';
-	info.style.top = '10px';
-	info.style.width = '100%';
-	info.style.textAlign = 'center';
-	//info.style.color = '#fff';
-	//info.innerHTML = '<a href="https://threejs.org" target="_blank" rel="noopener">three.js</a> webgl - geometry extrude shapes';
-	document.body.appendChild( info );*/
-
 	renderer = new THREE.WebGLRenderer({ antialias: true });
 	renderer.setPixelRatio(window.devicePixelRatio);
 	renderer.setSize(window.innerWidth, window.innerHeight);
 	renderer.setAnimationLoop(animate);
 	document.body.appendChild(renderer.domElement);
 
-	scene = new THREE.Scene();
-	scene.background = new THREE.Color(0xFFDBEC);
-
 	camera = new THREE.PerspectiveCamera(45, window.innerWidth / window.innerHeight, 1, 1000);
 	camera.position.set(0, 0, 500);
+
+	scene = new THREE.Scene();
+	//scene.background = new THREE.Color(0xFFDBEC);
+
+	// ----------SF Begining
+	scene.fog = new THREE.FogExp2( 0x000000, 0.0008 ); //SF
+	const geometry = new THREE.BufferGeometry();
+	const vertices = [];
+	const textureLoader = new THREE.TextureLoader();
+	const assignSRGB = ( texture ) => {
+		texture.colorSpace = THREE.SRGBColorSpace;
+	};
+	const sprite1 = textureLoader.load( 'textures/sprites/snowflake4.png', assignSRGB );
+	sprite1.colorSpace = THREE.SRGBColorSpace;
+	const sprite2 = textureLoader.load( 'textures/sprites/snowflake2.png', assignSRGB );
+	sprite2.colorSpace = THREE.SRGBColorSpace;
+	const sprite3 = textureLoader.load( 'textures/sprites/snowflake5.png', assignSRGB );
+	sprite3.colorSpace = THREE.SRGBColorSpace;
+	for ( let i = 0; i < 10000; i ++ ) {
+		const x = Math.random() * 2000 - 1000;
+		const y = Math.random() * 2000 - 1000;
+		const z = Math.random() * 2000 - 1000;
+		vertices.push( x, y, z );
+	}
+	geometry.setAttribute( 'position', new THREE.Float32BufferAttribute( vertices, 3 ) );
+	parameters = [
+		[[ 0.8, 0.2, 0.87 ], sprite2, 10 ],
+		[[ 0.92, 0.31, 0.54 ], sprite3, 7 ],
+		[[ 0.92, 0.31, 0.54 ], sprite1, 5 ]
+	];
+	for (let i = 0; i < parameters.length; i ++) {
+		const color = parameters[i][0];
+		const sprite = parameters[i][1];
+		const size = parameters[i][2];
+		materials[i] = new THREE.PointsMaterial({ size: size, 
+			map: sprite, 
+			blending: THREE.AdditiveBlending, 
+			depthTest: false, 
+    		depthWrite: false,
+			transparent: true });
+		//materials[i].color.setHSL(color[0], color[1], color[2], THREE.SRGBColorSpace);
+		materials[i].color.setHSL(color[0], color[1], color[2]);
+		const particles = new THREE.Points(geometry, materials[i]);
+		particles.rotation.x = Math.random() * 6;
+		particles.rotation.y = Math.random() * 6;
+		particles.rotation.z = Math.random() * 6;
+		scene.add( particles );
+	}
+	//
+	// ----------SF END
 
 	controls = new TrackballControls(camera, renderer.domElement);
 	controls.minDistance = 200;
@@ -271,6 +269,21 @@ function animate() {
 				window.location.href = `./${targetStar.name}.html`;
 			}, 300);
 		}
+	}
+	render();
+}
+
+function render() {
+	const time = Date.now() * 0.0001;
+	
+	for ( let i = 0; i < scene.children.length; i ++ ) {
+		const object = scene.children[ i ];
+		if ( object instanceof THREE.Points ) {
+			object.rotation.y = time * ( i < 4 ? i + 1 : - ( i + 1 ) );
+		}
+	}
+	for ( let i = 0; i < materials.length; i ++ ) {
+		const color = parameters[i][0];
 	}
 	renderer.render(scene, camera);
 }
