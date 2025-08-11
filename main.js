@@ -3,6 +3,8 @@
 import * as THREE from 'three';
 
 import { TrackballControls } from 'three/addons/controls/TrackballControls.js';
+import { FontLoader } from 'three/addons/loaders/FontLoader.js';
+import { TextGeometry } from 'three/addons/geometries/TextGeometry.js';
 
 let camera, scene, renderer, controls, raycaster, mouse;
 let stars = [];
@@ -83,6 +85,29 @@ function createStar(px, py, pz, starName)
 	star.position.set(px, py, pz);
 	star.userData.isHovered = false;
 	star.name = starName;
+
+// add text to star
+const loader = new FontLoader();
+loader.load('https://threejs.org/examples/fonts/helvetiker_regular.typeface.json', font => {
+  // Create text geometry
+    const textGeom = new TextGeometry(`Star`, {
+      font: font,
+      size: 0.4, // text size
+      height: 0.05, // extrusion depth
+    });
+    const textMat = new THREE.MeshBasicMaterial({ color: 0xffffff });
+    const textMesh = new THREE.Mesh(textGeom, textMat);
+
+    // Position the text relative to the star
+    textGeom.computeBoundingBox();
+    const bbox = textGeom.boundingBox;
+    const textWidth = bbox.max.x - bbox.min.x;
+
+    textMesh.position.set(-textWidth / 2, 1.5, 0); // above star, centered
+    star.add(textMesh); // attach text to the star
+ });
+//end add text
+
 	return star;
 }
 
@@ -224,7 +249,7 @@ function animate() {
 		if (tLinear >= 1) {
 			zooming = false;
 			setTimeout(() => {
-				window.location.href = `${targetStar.name}.html`;
+				window.location.href = `./${targetStar.name}.html`;
 			}, 300);
 		}
 	}
