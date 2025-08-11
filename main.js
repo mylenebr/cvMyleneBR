@@ -104,7 +104,7 @@ function init() {
 	scene = new THREE.Scene();
 	//scene.background = new THREE.Color(0xFFDBEC);
 
-	// ----------SF Begining
+	// ----------SF Begining 
 	scene.fog = new THREE.FogExp2( 0x000000, 0.0008 ); //SF
 	const geometry = new THREE.BufferGeometry();
 	const vertices = [];
