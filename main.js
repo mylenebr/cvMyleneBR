@@ -91,7 +91,7 @@ function createStar(px, py, pz, starName, starPage)
 // Load font and attach text to THIS star
 const loader = new FontLoader();
 loader.load(
-  'public/fonts/optimer_bold.typeface.json',
+  'fonts/optimer_bold.typeface.json',
   function (font) {
     const textGeo = new TextGeometry(starPage, {
       font: font,
