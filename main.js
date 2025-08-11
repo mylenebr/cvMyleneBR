@@ -20,18 +20,17 @@ init();
 
 function createStar(px, py, pz, starName, starPage)
 {
-	const pts2 = [], numPts = 5;
+	const pts = [], numPts = 5;
 	for ( let i = 0; i < numPts * 2; i ++ ) {
 		const l = i % 2 == 1 ? 10 : 20;
 		const a = i / numPts * Math.PI;
-		pts2.push( new THREE.Vector2(Math.cos(a) * l, Math.sin(a) * l));
+		pts.push( new THREE.Vector2(Math.cos(a) * l, Math.sin(a) * l));
 	}
-	const starShape = new THREE.Shape(pts2);
+	const starShape = new THREE.Shape(pts);
 	const materialExt = new THREE.MeshLambertMaterial( { color: 0x5C1F36, wireframe: false } );
-	
-	//
 	const materialInt = new THREE.MeshLambertMaterial( { color: 0xFFC2DE, wireframe: false } );
 	const materials = [ materialInt, materialExt ];
+
 	const starDepth = 20;
 	const extrudeSettings = {
 		depth: starDepth,
@@ -47,65 +46,49 @@ function createStar(px, py, pz, starName, starPage)
 	star.userData.isHovered = false;
 	star.name = starName;
 
-// add text to star
-// Load font and attach text to THIS star
-const loader = new FontLoader();
-loader.load(
-  'fonts/optimer_bold.typeface.json',
-  function (font) {
-    const textGeo = new TextGeometry(starPage, {
-      font: font,
-      size: 10,
-	  depth: 5,
-      height: 0,
-      curveSegments: 8
-    });
+	// add text to star
+	// Load font and attach text to THIS star
+	const loader = new FontLoader();
+	loader.load(
+		'fonts/optimer_bold.typeface.json',
+		function (font) {
+			const textGeo = new TextGeometry(starPage, {
+			font: font,
+			size: 10,
+			depth: 5,
+			height: 0,
+			curveSegments: 8
+			});
 
-    // Center text above the star
-    textGeo.computeBoundingBox();
-    const w = textGeo.boundingBox.max.x - textGeo.boundingBox.min.x;
-	const d = starDepth + 1;
-    textGeo.translate(-w / 2, 1.5, d); // X center, Y above sphere, Z same
+			// Center text above the star
+			textGeo.computeBoundingBox();
+			const w = textGeo.boundingBox.max.x - textGeo.boundingBox.min.x;
+			const d = starDepth + 1;
+			textGeo.translate(-w / 2, 1.5, d); // X center, Y above sphere, Z same
 
-    //const textMat = new THREE.MeshBasicMaterial({ color: 0xffffff });
-	const textMat = new THREE.MeshPhongMaterial({ color: 0xffffff, metalness: 0.5, roughness: 0.5 });
+			//const textMat = new THREE.MeshBasicMaterial({ color: 0xffffff });
+			const textMat = new THREE.MeshPhongMaterial({ color: 0xffffff, metalness: 0.5, roughness: 0.5 });
+			const textMesh = new THREE.Mesh(textGeo, textMat);
 
-	const textMesh = new THREE.Mesh(textGeo, textMat);
+			// Attach text to star so it moves/rotates with it
+			star.add(textMesh);
+		},
+			// onProgress callback
+			function ( xhr ) {
+				console.log( (xhr.loaded / xhr.total * 100) + '% loaded' );
+			},
 
-    // Attach text to star so it moves/rotates with it
-    star.add(textMesh);
-  },
-  	// onProgress callback
-	function ( xhr ) {
-		console.log( (xhr.loaded / xhr.total * 100) + '% loaded' );
-	},
-
-	// onError callback
-	function ( err ) {
-		console.log( 'An error happened' );
-	}
-);
-//end add text
-
+			// onError callback
+			function ( err ) {
+				console.log( 'An error happened' );
+			}
+	);
+	//end add text
 	return star;
 }
 
-function init() {
-
-	renderer = new THREE.WebGLRenderer({ antialias: true });
-	renderer.setPixelRatio(window.devicePixelRatio);
-	renderer.setSize(window.innerWidth, window.innerHeight);
-	renderer.setAnimationLoop(animate);
-	document.body.appendChild(renderer.domElement);
-
-	camera = new THREE.PerspectiveCamera(45, window.innerWidth / window.innerHeight, 1, 1000);
-	camera.position.set(0, 0, 500);
-
-	scene = new THREE.Scene();
-	//scene.background = new THREE.Color(0xFFDBEC);
-
-	// ----------SF Begining 
-	scene.fog = new THREE.FogExp2( 0x000000, 0.0008 ); //SF
+function snowParticles(){
+	scene.fog = new THREE.FogExp2( 0x000000, 0.0008 );
 	const geometry = new THREE.BufferGeometry();
 	const vertices = [];
 	const textureLoader = new THREE.TextureLoader();
@@ -140,7 +123,6 @@ function init() {
 			depthTest: false, 
     		depthWrite: false,
 			transparent: true });
-		//materials[i].color.setHSL(color[0], color[1], color[2], THREE.SRGBColorSpace);
 		materials[i].color.setHSL(color[0], color[1], color[2]);
 		const particles = new THREE.Points(geometry, materials[i]);
 		particles.rotation.x = Math.random() * 6;
@@ -148,23 +130,38 @@ function init() {
 		particles.rotation.z = Math.random() * 6;
 		scene.add( particles );
 	}
-	//
-	// ----------SF END
+}
 
+function init() {
+
+	// Renderer
+	renderer = new THREE.WebGLRenderer({ antialias: true });
+	renderer.setPixelRatio(window.devicePixelRatio);
+	renderer.setSize(window.innerWidth, window.innerHeight);
+	renderer.setAnimationLoop(animate);
+	document.body.appendChild(renderer.domElement);
+
+	// Camera
+	camera = new THREE.PerspectiveCamera(45, window.innerWidth / window.innerHeight, 1, 1000);
+	camera.position.set(0, 0, 500);
+
+	// Controls
 	controls = new TrackballControls(camera, renderer.domElement);
 	controls.minDistance = 200;
 	controls.maxDistance = 500;
 
+	// Scene
+	scene = new THREE.Scene();
+	//scene.background = new THREE.Color(0xFFDBEC);
 	scene.add(new THREE.AmbientLight( 0x666666 ));
-
 	const light = new THREE.PointLight( 0xffffff, 3, 0, 0 );
 	light.position.copy(camera.position);
 	scene.add(light);
 
-	// Draw 5 black lines (partition)
-	// drawLines();\
+	// Snow Particles
+	snowParticles();
 
-	//
+	// Stars
 	const star1 = createStar(-250, 50, 10, "star1", "Experience");
 	scene.add(star1); 
 	const star2 = createStar(-150, -100, 10, "star2", "Compétences");
@@ -235,14 +232,14 @@ function easeInOutCubic(t) {
 function animate() {
     requestAnimationFrame(animate); //pour tubes
 	controls.update();
-	// Spin only hovered stars
+
+	// Spin hovered star
 	stars.forEach(star => {
 		if (star.userData.spinning) { 
 			// Spin slowly around Y axis
-			star.rotation.y += 0.001; // slow speed
+			star.rotation.y += 0.001;
 
 			(Math.cos(star.rotation.y)>0) ? star.position.y += 0.005 : star.position.y -= 0.005;
-			
 
 			// Stop when target reached
 			if (star.rotation.y >= star.userData.targetRotation) {
@@ -260,7 +257,6 @@ function animate() {
 
 		const targetPos = targetStar.position.clone().add(new THREE.Vector3(0, 0, 3));
 		camera.position.lerpVectors(camera.position, targetPos, t);
-
 		camera.lookAt(targetStar.position);
 
 		if (tLinear >= 1) {
