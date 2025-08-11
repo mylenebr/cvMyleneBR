@@ -58,7 +58,7 @@ function drawLines()
     }
 }
 
-function createStar(px, py, pz, starName)
+function createStar(px, py, pz, starName, starPage)
 {
 	const pts2 = [], numPts = 5;
 	for ( let i = 0; i < numPts * 2; i ++ ) {
@@ -72,40 +72,59 @@ function createStar(px, py, pz, starName)
 	//
 	const materialInt = new THREE.MeshLambertMaterial( { color: 0xFFC2DE, wireframe: false } );
 	const materials = [ materialInt, materialExt ];
-	const extrudeSettings3 = {
-		depth: 20,
+	const starDepth = 20;
+	const extrudeSettings = {
+		depth: starDepth,
 		steps: 1,
 		bevelEnabled: true,
 		bevelThickness: 2,
 		bevelSize: 4,
 		bevelSegments: 1
 	};
-	const starGeo = new THREE.ExtrudeGeometry( starShape, extrudeSettings3 );
-	const star = new THREE.Mesh( starGeo, materials );
+	const starGeo = new THREE.ExtrudeGeometry(starShape, extrudeSettings);
+	const star = new THREE.Mesh(starGeo, materials);
 	star.position.set(px, py, pz);
 	star.userData.isHovered = false;
 	star.name = starName;
 
 // add text to star
+// Load font and attach text to THIS star
 const loader = new FontLoader();
-loader.load('https://threejs.org/examples/fonts/helvetiker_regular.typeface.json', font => {
-  // Create text geometry
-    const textGeom = new TextGeometry(`Star`, {
+loader.load(
+  'fonts/optimer_bold.typeface.json', 
+  function (font) {
+    const textGeo = new TextGeometry(starPage, {
       font: font,
-      size: 0.4, // text size
-      height: 0.05, // extrusion depth
+      size: 10,
+	  depth: 5,
+      height: 0,
+      curveSegments: 8
     });
-    const textMat = new THREE.MeshBasicMaterial({ color: 0xffffff });
-    const textMesh = new THREE.Mesh(textGeom, textMat);
 
-    // Position the text relative to the star
-    textGeom.computeBoundingBox();
-    const bbox = textGeom.boundingBox;
-    const textWidth = bbox.max.x - bbox.min.x;
+    // Center text above the star
+    textGeo.computeBoundingBox();
+    const w = textGeo.boundingBox.max.x - textGeo.boundingBox.min.x;
+	const d = starDepth + 1;
+    textGeo.translate(-w / 2, 1.5, d); // X center, Y above sphere, Z same
 
-    textMesh.position.set(-textWidth / 2, 1.5, 0); // above star, centered
-    star.add(textMesh); // attach text to the star
- });
+    //const textMat = new THREE.MeshBasicMaterial({ color: 0xffffff });
+	const textMat = new THREE.MeshPhongMaterial({ color: 0xffffff, metalness: 0.5, roughness: 0.5 });
+
+	const textMesh = new THREE.Mesh(textGeo, textMat);
+
+    // Attach text to star so it moves/rotates with it
+    star.add(textMesh);
+  },
+  // onProgress callback
+	function ( xhr ) {
+		console.log( (xhr.loaded / xhr.total * 100) + '% loaded' );
+	},
+
+	// onError callback
+	function ( err ) {
+		console.log( 'An error happened' );
+	}
+);
 //end add text
 
 	return star;
@@ -148,15 +167,15 @@ function init() {
 	// drawLines();\
 
 	//
-	const star1 = createStar(-250, 50, 10, "star1");
+	const star1 = createStar(-250, 50, 10, "star1", "Experience");
 	scene.add(star1); 
-	const star2 = createStar(-150, -100, 10, "star2");
+	const star2 = createStar(-150, -100, 10, "star2", "Compétences");
 	scene.add(star2); 
-	const star3 = createStar(-50, 30, 10, "star3");
+	const star3 = createStar(-50, 30, 10, "star3", "Cursus");
 	scene.add(star3); 
-	const star4 = createStar(30, -120, 10, "star4");
+	const star4 = createStar(30, -120, 10, "star4", "Intérets");
 	scene.add(star4); 
-	const star5 = createStar(200, 20, 10, "star5");
+	const star5 = createStar(200, 20, 10, "star5", "???");
 	scene.add(star5); 
 
 	stars.push(star1); stars.push(star2); stars.push(star3); stars.push(star4); stars.push(star5);
