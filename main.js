@@ -95,11 +95,11 @@ function snowParticles(){
 	const assignSRGB = ( texture ) => {
 		texture.colorSpace = THREE.SRGBColorSpace;
 	};
-	const sprite1 = textureLoader.load( 'textures/sprites/snowflake4.png', assignSRGB );
+	const sprite1 = textureLoader.load('textures/sprites/snowflake2.png', assignSRGB);
 	sprite1.colorSpace = THREE.SRGBColorSpace;
-	const sprite2 = textureLoader.load( 'textures/sprites/snowflake2.png', assignSRGB );
+	const sprite2 = textureLoader.load('textures/sprites/snowflake4.png', assignSRGB);
 	sprite2.colorSpace = THREE.SRGBColorSpace;
-	const sprite3 = textureLoader.load( 'textures/sprites/snowflake5.png', assignSRGB );
+	const sprite3 = textureLoader.load('textures/sprites/snowflake5.png', assignSRGB);
 	sprite3.colorSpace = THREE.SRGBColorSpace;
 	for ( let i = 0; i < 10000; i ++ ) {
 		const x = Math.random() * 2000 - 1000;
@@ -109,9 +109,9 @@ function snowParticles(){
 	}
 	geometry.setAttribute( 'position', new THREE.Float32BufferAttribute( vertices, 3 ) );
 	parameters = [
-		[[ 0.8, 0.2, 0.87 ], sprite2, 10 ],
-		[[ 0.92, 0.31, 0.54 ], sprite3, 7 ],
-		[[ 0.92, 0.31, 0.54 ], sprite1, 5 ]
+		[[ 0.8, 0.2, 0.87 ], sprite1, 20 ],
+		[[ 0.92, 0.31, 0.54 ], sprite2, 11 ],
+		[[ 0.92, 0.31, 0.54 ], sprite3, 6 ]
 	];
 	for (let i = 0; i < parameters.length; i ++) {
 		const color = parameters[i][0];
@@ -128,7 +128,7 @@ function snowParticles(){
 		particles.rotation.x = Math.random() * 6;
 		particles.rotation.y = Math.random() * 6;
 		particles.rotation.z = Math.random() * 6;
-		scene.add( particles );
+		scene.add(particles);
 	}
 }
 
@@ -152,7 +152,8 @@ function init() {
 
 	// Scene
 	scene = new THREE.Scene();
-	//scene.background = new THREE.Color(0xFFDBEC);
+	//scene.background = new THREE.Color(0xFFDBEC);#240913
+	scene.background = new THREE.Color(0xC7B1BD);
 	scene.add(new THREE.AmbientLight( 0x666666 ));
 	const light = new THREE.PointLight( 0xffffff, 3, 0, 0 );
 	light.position.copy(camera.position);
@@ -166,11 +167,11 @@ function init() {
 	scene.add(star1); 
 	const star2 = createStar(-150, -100, 10, "star2", "Compétences");
 	scene.add(star2); 
-	const star3 = createStar(-50, 30, 10, "star3", "Cursus");
+	const star3 = createStar(-50, 30, 10, "star3", "Présentation");
 	scene.add(star3); 
 	const star4 = createStar(30, -120, 10, "star4", "Intérets");
 	scene.add(star4); 
-	const star5 = createStar(200, 20, 10, "star5", "???");
+	const star5 = createStar(200, 20, 10, "star5", "Cursus");
 	scene.add(star5); 
 
 	stars.push(star1); stars.push(star2); stars.push(star3); stars.push(star4); stars.push(star5);
@@ -237,7 +238,7 @@ function animate() {
 	stars.forEach(star => {
 		if (star.userData.spinning) { 
 			// Spin slowly around Y axis
-			star.rotation.y += 0.001;
+			star.rotation.y += 0.005;
 
 			(Math.cos(star.rotation.y)>0) ? star.position.y += 0.005 : star.position.y -= 0.005;
 
@@ -269,17 +270,16 @@ function animate() {
 	render();
 }
 
+const clock = new THREE.Clock();
 function render() {
-	const time = Date.now() * 0.0001;
+	const delta = clock.getDelta()*0.5; // seconds since last frame
 	
-	for ( let i = 0; i < scene.children.length; i ++ ) {
-		const object = scene.children[ i ];
-		if ( object instanceof THREE.Points ) {
-			object.rotation.y = time * ( i < 4 ? i + 1 : - ( i + 1 ) );
+	for (let i = 0; i < scene.children.length; i ++) {
+		const object = scene.children[i];
+		if (object instanceof THREE.Points) {
+            const speed = (i < 2 ? i + 1 : -(i + 1)) * 0.1;
+            object.rotation.y += speed * delta;
 		}
-	}
-	for ( let i = 0; i < materials.length; i ++ ) {
-		const color = parameters[i][0];
 	}
 	renderer.render(scene, camera);
 }
