@@ -21,6 +21,10 @@ let lightPink = 0xFFC2DE;
 let darkPink = 0x5C1F36;
 let backgroundPink = 0xC7B1BD;
 
+let ORBIT_RADIUS = 30;   // how far from the star center
+let ORBIT_HEIGHT = 2;    // a little above the star
+let ORBIT_SPEED  = 0.8;  // radians per second
+
 init();
 
 function header()
@@ -65,6 +69,30 @@ function header()
 
 }
 
+function bendGeometryToCircle(geometry, radius) {
+    geometry.computeBoundingBox();
+    const size = geometry.boundingBox.getSize(new THREE.Vector3());
+    const halfWidth = size.x / 2;
+
+    const pos = geometry.attributes.position;
+    const v = new THREE.Vector3();
+
+    for (let i = 0; i < pos.count; i++) {
+        v.fromBufferAttribute(pos, i);
+
+        // map x into angle around circle
+        const angle = (v.x / radius);
+        const newX = Math.sin(angle) * radius;
+        const newZ = Math.cos(angle) * radius - radius;
+
+        pos.setXYZ(i, newX, v.y, newZ);
+    }
+
+    pos.needsUpdate = true;
+    geometry.computeVertexNormals();
+}
+
+
 function createStar(px, py, pz, starName, starPage)
 {
 	const pts = [], numPts = 5;
@@ -93,6 +121,13 @@ function createStar(px, py, pz, starName, starPage)
 	star.userData.isHovered = false;
 	star.name = starName;
 
+	// Create a pivot centered on the star
+	const pivot = new THREE.Group();
+	pivot.position.set(0, 0, 0);
+	star.add(pivot);                 // pivot moves with the star
+	star.userData.textPivot = pivot; // keep a handle
+	star.userData.orbitSpeed = ORBIT_SPEED;
+
 	// add text to star
 	// Load font and attach text to THIS star
 	const loader = new FontLoader();
@@ -106,6 +141,7 @@ function createStar(px, py, pz, starName, starPage)
 			height: 0,
 			curveSegments: 8
 			});
+			bendGeometryToCircle(textGeo, 50);
 
 			// Center text above the star
 			textGeo.computeBoundingBox();
@@ -113,12 +149,14 @@ function createStar(px, py, pz, starName, starPage)
 			const d = starDepth + 1;
 			textGeo.translate(-w / 2, 1.5, d); // X center, Y above sphere, Z same
 
-			//const textMat = new THREE.MeshBasicMaterial({ color: 0xffffff });
-			const textMat = new THREE.MeshPhongMaterial({ color: 0xffffff, metalness: 0.5, roughness: 0.5 });
+			const textMat = new THREE.MeshBasicMaterial({ color: 0xffffff });
+			//const textMat = new THREE.MeshPhongMaterial({ color: 0xffffff, metalness: 0.5, roughness: 0.5 });
 			const textMesh = new THREE.Mesh(textGeo, textMat);
 
-			// Attach text to star so it moves/rotates with it
-			star.add(textMesh);
+			textMesh.position.set(ORBIT_RADIUS, ORBIT_HEIGHT, 0);
+
+			// Add pivot to star
+			pivot.add(textMesh);
 		},
 		// onProgress callback
 		function ( xhr ) {
@@ -280,9 +318,24 @@ function easeInOutCubic(t) {
     : 1 - Math.pow(-2 * t + 2, 3) / 2;
 }
 
+let last = performance.now();
 function animate() {
     requestAnimationFrame(animate); //pour tubes
 	controls.update();
+
+	const now = performance.now();
+
+	// Rotate text pivots for all stars
+	const dt = (now - last) / 1000; // seconds
+  	last = now;
+	scene.traverse((obj) => {
+		if (obj.userData && obj.userData.textPivot) {
+		obj.userData.textPivot.rotation.y += (obj.userData.orbitSpeed || 0.8) * dt;
+		}
+
+		// Optional billboard so text always faces camera:
+		// if (obj.isMesh && obj.userData.billboard) obj.lookAt(camera.position);
+	});
 
 	// Spin hovered star
 	stars.forEach(star => {
@@ -302,7 +355,6 @@ function animate() {
 
 	// Click star 
 	if (zooming && targetStar) {
-		const now = performance.now();
 		const tLinear = Math.min((now - zoomStart) / zoomDuration, 1);
 		const t = easeInOutCubic(tLinear); // apply easing
 
