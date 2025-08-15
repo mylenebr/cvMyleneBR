@@ -16,7 +16,54 @@ let zooming = false;
 let zoomStart = null;
 let zoomDuration = 1000; // ms (1s)
 
+// Colors
+let lightPink = 0xFFC2DE;
+let darkPink = 0x5C1F36;
+let backgroundPink = 0xC7B1BD;
+
 init();
+
+function header()
+{
+
+	// Name Title
+	const loaderHeader = new FontLoader();
+	loaderHeader.load(
+		'fonts/optimer_bold.typeface.json',
+		function (font) {
+			const textGeo = new TextGeometry("Mylène Bénier-Rollet", {
+			font: font,
+			size: 20,
+			depth: 5,
+			height: 0,
+			curveSegments: 8
+			});
+
+			// Center text above the star
+			textGeo.computeBoundingBox();
+			const w = textGeo.boundingBox.max.x - textGeo.boundingBox.min.x;
+			const d = 1;
+			//textGeo.translate(-w / 2, 1.5, d); // X center, Y above sphere, Z same
+
+			//const textMat = new THREE.MeshBasicMaterial({ color: 0xffffff });
+			const textMat = new THREE.MeshPhongMaterial({ color: darkPink, metalness: 0.5, roughness: 0.5 });
+			const textMesh = new THREE.Mesh(textGeo, textMat);
+			textMesh.position.set(-150, 100, 10);
+
+			// Attach text to star so it moves/rotates with it
+			scene.add(textMesh);
+		},
+		// onProgress callback
+		function ( xhr ) {
+			console.log( (xhr.loaded / xhr.total * 100) + '% loaded' );
+		},
+		// onError callback
+		function ( err ) {
+			console.log( 'An error happened' );
+		}
+	);
+
+}
 
 function createStar(px, py, pz, starName, starPage)
 {
@@ -27,8 +74,8 @@ function createStar(px, py, pz, starName, starPage)
 		pts.push( new THREE.Vector2(Math.cos(a) * l, Math.sin(a) * l));
 	}
 	const starShape = new THREE.Shape(pts);
-	const materialExt = new THREE.MeshLambertMaterial( { color: 0x5C1F36, wireframe: false } );
-	const materialInt = new THREE.MeshLambertMaterial( { color: 0xFFC2DE, wireframe: false } );
+	const materialExt = new THREE.MeshLambertMaterial( { color: darkPink, wireframe: false } );
+	const materialInt = new THREE.MeshLambertMaterial( { color: lightPink, wireframe: false } );
 	const materials = [ materialInt, materialExt ];
 
 	const starDepth = 20;
@@ -73,15 +120,14 @@ function createStar(px, py, pz, starName, starPage)
 			// Attach text to star so it moves/rotates with it
 			star.add(textMesh);
 		},
-			// onProgress callback
-			function ( xhr ) {
-				console.log( (xhr.loaded / xhr.total * 100) + '% loaded' );
-			},
-
-			// onError callback
-			function ( err ) {
-				console.log( 'An error happened' );
-			}
+		// onProgress callback
+		function ( xhr ) {
+			console.log( (xhr.loaded / xhr.total * 100) + '% loaded' );
+		},
+		// onError callback
+		function ( err ) {
+			console.log( 'An error happened' );
+		}
 	);
 	//end add text
 	return star;
@@ -101,7 +147,7 @@ function snowParticles(){
 	sprite2.colorSpace = THREE.SRGBColorSpace;
 	const sprite3 = textureLoader.load('textures/sprites/snowflake5.png', assignSRGB);
 	sprite3.colorSpace = THREE.SRGBColorSpace;
-	for ( let i = 0; i < 10000; i ++ ) {
+	for ( let i = 0; i < 5000; i ++ ) {
 		const x = Math.random() * 2000 - 1000;
 		const y = Math.random() * 2000 - 1000;
 		const z = Math.random() * 2000 - 1000;
@@ -132,6 +178,7 @@ function snowParticles(){
 	}
 }
 
+
 function init() {
 
 	// Renderer
@@ -153,11 +200,14 @@ function init() {
 	// Scene
 	scene = new THREE.Scene();
 	//scene.background = new THREE.Color(0xFFDBEC);#240913
-	scene.background = new THREE.Color(0xC7B1BD);
-	scene.add(new THREE.AmbientLight( 0x666666 ));
-	const light = new THREE.PointLight( 0xffffff, 3, 0, 0 );
+	scene.background = new THREE.Color(backgroundPink);
+	scene.add(new THREE.AmbientLight(0x666666));
+	const light = new THREE.PointLight(0xffffff, 3, 0, 0);
 	light.position.copy(camera.position);
 	scene.add(light);
+
+	// Header
+	header();
 
 	// Snow Particles
 	snowParticles();
