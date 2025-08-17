@@ -1,1 +1,0 @@
-import{c as o,d as r,P as t,W as d}from"./three.module-Nl_KJ8Fp.js";const n=new o;n.background=new r(16767980);const i=new t(75,window.innerWidth/window.innerHeight,.1,1e3),e=new d;e.setSize(window.innerWidth,window.innerHeight);document.body.appendChild(e.domElement);i.position.z=5;function a(){e.render(n,i)}e.setAnimationLoop(a);

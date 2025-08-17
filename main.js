@@ -8,6 +8,7 @@ import { TextGeometry } from 'three/addons/geometries/TextGeometry.js';
 
 let camera, scene, renderer, controls, raycaster, mouse, parameters;
 let stars = [];
+let sparks = [];
 const materials = []; //SF
 
 // Zoom/click on stars
@@ -21,6 +22,18 @@ let zoomStartPos = null;
 let lightPink = 0xFFC2DE;
 let darkPink = 0x5C1F36;
 let backgroundPink = 0x614850; //0xC7B1BD;
+
+// Star poses
+const starPoses = [
+    new THREE.Vector3(-250, 50, 10),
+    new THREE.Vector3(-150, -100, 10),
+    new THREE.Vector3(-50, 30, 10),
+    new THREE.Vector3(30, -120, 10),
+    new THREE.Vector3(200, 20, 10),
+];
+const curve = new THREE.CatmullRomCurve3(starPoses);
+const frames = curve.computeFrenetFrames(100, true); // precompute 100 segments
+
 
 init();
 
@@ -47,7 +60,7 @@ function header()
 			//textGeo.translate(-w / 2, 1.5, d); // X center, Y above sphere, Z same
 
 			//const textMat = new THREE.MeshBasicMaterial({ color: 0xffffff });
-			const textMat = new THREE.MeshPhongMaterial({ color: darkPink, metalness: 0.5, roughness: 0.5 });
+			const textMat = new THREE.MeshPhongMaterial({ color: lightPink, metalness: 0.5, roughness: 0.5 });
 			const textMesh = new THREE.Mesh(textGeo, textMat);
 			textMesh.position.set(-150, 100, 10);
 
@@ -98,7 +111,7 @@ function createSparkleSprites(mesh, count = 200, radius = 50) {
   	mesh.userData.sparks = sparks;
 }
 
-function createStar(px, py, pz, starName, starPage)
+function createStar(pos, starName, starPage)
 {
 	const pts = [], numPts = 5;
 	for ( let i = 0; i < numPts * 2; i ++ ) {
@@ -122,7 +135,7 @@ function createStar(px, py, pz, starName, starPage)
 	};
 	const starGeo = new THREE.ExtrudeGeometry(starShape, extrudeSettings);
 	const star = new THREE.Mesh(starGeo, materials);
-	star.position.set(px, py, pz);
+	star.position.set(pos.x, pos.y, pos.z);
 	star.userData.isHovered = false;
 	star.name = starName;
 
@@ -167,6 +180,28 @@ function createStar(px, py, pz, starName, starPage)
 	//createSparkleSprites(star);
 
 	return star;
+}
+
+function sparklethread()
+{
+	const sparkTexture = new THREE.TextureLoader().load('textures/sprites/sparkle.png');
+	const sparkMaterial = new THREE.SpriteMaterial({
+		map: sparkTexture,
+		color: 0xffffaa,
+		transparent: true,
+		blending: THREE.AdditiveBlending,
+    	depthWrite: false 
+	});
+
+	for (let i = 0; i < 2000; i++) {
+		const sprite = new THREE.Sprite(sparkMaterial.clone());
+		sprite.scale.set(1, 1, 1);
+		scene.add(sprite);
+		sparks.push({
+			sprite,
+			offset: Math.random() // random start along curve
+		});
+	}
 }
 
 function snowParticles(){
@@ -256,18 +291,22 @@ function init() {
 	snowParticles();
 
 	// Stars
-	const star1 = createStar(-250, 50, 10, "star1", "Experience");
+	const star1 = createStar(starPoses[0], "star1", "Experience");
 	scene.add(star1); 
-	const star2 = createStar(-150, -100, 10, "star2", "Compétences");
+	const star2 = createStar(starPoses[1], "star2", "Compétences");
 	scene.add(star2); 
-	const star3 = createStar(-50, 30, 10, "star3", "Présentation");
+	const star3 = createStar(starPoses[2], "star3", "Présentation");
 	scene.add(star3); 
-	const star4 = createStar(30, -120, 10, "star4", "Intérets");
+	const star4 = createStar(starPoses[3], "star4", "Intérets");
 	scene.add(star4); 
-	const star5 = createStar(200, 20, 10, "star5", "Cursus");
+	const star5 = createStar(starPoses[4], "star5", "Cursus");
 	scene.add(star5); 
 
 	stars.push(star1); stars.push(star2); stars.push(star3); stars.push(star4); stars.push(star5);
+
+	// Thread between stars
+	sparklethread();
+
 
 	// Raycaster setup
 	raycaster = new THREE.Raycaster();
@@ -326,6 +365,34 @@ function animate() {
 	controls.update();
 
 	const now = performance.now();
+
+	// Animate thread sparkles
+	const time = now * 0.0005;
+	sparks.forEach(s => {
+		const t = (time * 0.05 + s.offset) % 1; // move forward
+
+		// Base position on curve
+		const pos = curve.getPointAt(t);
+
+		// Find local frame
+		const l = Math.floor(t * frames.tangents.length); 
+		const normal = frames.normals[l];
+		const binormal = frames.binormals[l];
+
+		// Add a small circular offset
+		const angle = time * 2 + s.offset * Math.PI * 2; // spin around
+		const radius = 10; // how far they float away
+		const offset = normal.clone().multiplyScalar(Math.cos(angle) * radius)
+					.add(binormal.clone().multiplyScalar(Math.sin(angle) * radius));
+
+		s.sprite.position.copy(pos.clone().add(offset));
+		s.sprite.position.add(new THREE.Vector3(
+			(Math.random() - 0.5) * 2,
+			(Math.random() - 0.5) * 2,
+			(Math.random() - 0.5) * 2
+		));
+	});
+
 
 	// Spin hovered star
 	stars.forEach(star => {
