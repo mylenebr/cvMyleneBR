@@ -13,17 +13,14 @@ const materials = []; //SF
 // Zoom/click on stars
 let targetStar = null; // the star we clicked
 let zooming = false;
-let zoomStart = null;
+let zoomStart = 0;
 let zoomDuration = 1000; // ms (1s)
+let zoomStartPos = null;
 
 // Colors
 let lightPink = 0xFFC2DE;
 let darkPink = 0x5C1F36;
-let backgroundPink = 0xC7B1BD;
-
-let ORBIT_RADIUS = 30;   // how far from the star center
-let ORBIT_HEIGHT = 2;    // a little above the star
-let ORBIT_SPEED  = 0.8;  // radians per second
+let backgroundPink = 0x614850; //0xC7B1BD;
 
 init();
 
@@ -69,29 +66,37 @@ function header()
 
 }
 
-function bendGeometryToCircle(geometry, radius) {
-    geometry.computeBoundingBox();
-    const size = geometry.boundingBox.getSize(new THREE.Vector3());
-    const halfWidth = size.x / 2;
+function createSparkleSprites(mesh, count = 200, radius = 50) {
+  	const sparks = [];
 
-    const pos = geometry.attributes.position;
-    const v = new THREE.Vector3();
+	const spriteMat = new THREE.SpriteMaterial({
+		map: new THREE.TextureLoader().load('textures/sprites/sparkle.png'),
+		blending: THREE.AdditiveBlending,
+		transparent: true,
+		depthWrite: false
+	});
 
-    for (let i = 0; i < pos.count; i++) {
-        v.fromBufferAttribute(pos, i);
+	for (let i = 0; i < count; i++) {
+		const sprite = new THREE.Sprite(spriteMat);
+		sprite.scale.set(5, 5, 1);
 
-        // map x into angle around circle
-        const angle = (v.x / radius);
-        const newX = Math.sin(angle) * radius;
-        const newZ = Math.cos(angle) * radius - radius;
+		// store original position & motion speed
+		sprite.userData = {
+		basePos: new THREE.Vector3(
+			(Math.random() - 0.5) * radius,
+			(Math.random() - 0.5) * radius,
+			(Math.random() - 0.5) * radius
+		),
+		speed: Math.random() * 1.5 + 0.5,
+		phase: Math.random() * Math.PI * 2
+		};
 
-        pos.setXYZ(i, newX, v.y, newZ);
-    }
-
-    pos.needsUpdate = true;
-    geometry.computeVertexNormals();
+		sprite.position.copy(sprite.userData.basePos);
+		mesh.add(sprite);
+		sparks.push(sprite);
+	}
+  	mesh.userData.sparks = sparks;
 }
-
 
 function createStar(px, py, pz, starName, starPage)
 {
@@ -121,13 +126,6 @@ function createStar(px, py, pz, starName, starPage)
 	star.userData.isHovered = false;
 	star.name = starName;
 
-	// Create a pivot centered on the star
-	const pivot = new THREE.Group();
-	pivot.position.set(0, 0, 0);
-	star.add(pivot);                 // pivot moves with the star
-	star.userData.textPivot = pivot; // keep a handle
-	star.userData.orbitSpeed = ORBIT_SPEED;
-
 	// add text to star
 	// Load font and attach text to THIS star
 	const loader = new FontLoader();
@@ -141,7 +139,6 @@ function createStar(px, py, pz, starName, starPage)
 			height: 0,
 			curveSegments: 8
 			});
-			bendGeometryToCircle(textGeo, 50);
 
 			// Center text above the star
 			textGeo.computeBoundingBox();
@@ -153,10 +150,7 @@ function createStar(px, py, pz, starName, starPage)
 			//const textMat = new THREE.MeshPhongMaterial({ color: 0xffffff, metalness: 0.5, roughness: 0.5 });
 			const textMesh = new THREE.Mesh(textGeo, textMat);
 
-			textMesh.position.set(ORBIT_RADIUS, ORBIT_HEIGHT, 0);
-
-			// Add pivot to star
-			pivot.add(textMesh);
+			star.add(textMesh);
 		},
 		// onProgress callback
 		function ( xhr ) {
@@ -168,6 +162,10 @@ function createStar(px, py, pz, starName, starPage)
 		}
 	);
 	//end add text
+
+	// add sparkles
+	//createSparkleSprites(star);
+
 	return star;
 }
 
@@ -193,8 +191,8 @@ function snowParticles(){
 	}
 	geometry.setAttribute( 'position', new THREE.Float32BufferAttribute( vertices, 3 ) );
 	parameters = [
-		[[ 0.8, 0.2, 0.87 ], sprite1, 20 ],
-		[[ 0.92, 0.31, 0.54 ], sprite2, 11 ],
+		[[ 0.92, 0.31, 0.54  ], sprite1, 20 ],
+		[[ 1, 1, 1 ], sprite2, 11 ],
 		[[ 0.92, 0.31, 0.54 ], sprite3, 6 ]
 	];
 	for (let i = 0; i < parameters.length; i ++) {
@@ -214,6 +212,13 @@ function snowParticles(){
 		particles.rotation.z = Math.random() * 6;
 		scene.add(particles);
 	}
+}
+
+function startZoom(star) {
+    targetStar = star;
+    zoomStart = performance.now();
+    zooming = true;
+    zoomStartPos = camera.position.clone(); // 🔑 store starting position
 }
 
 
@@ -299,10 +304,7 @@ function onClick(event) {
   const intersects = raycaster.intersectObjects(stars);
 
   if (intersects.length > 0) {
-    targetStar = intersects[0].object;
-    zooming = true;
-    zoomStart = performance.now();
-    zoomStartPos = camera.position.clone(); // store start position
+	startZoom(intersects[0].object); // store start position
   }
 }
 
@@ -325,18 +327,6 @@ function animate() {
 
 	const now = performance.now();
 
-	// Rotate text pivots for all stars
-	const dt = (now - last) / 1000; // seconds
-  	last = now;
-	scene.traverse((obj) => {
-		if (obj.userData && obj.userData.textPivot) {
-		obj.userData.textPivot.rotation.y += (obj.userData.orbitSpeed || 0.8) * dt;
-		}
-
-		// Optional billboard so text always faces camera:
-		// if (obj.isMesh && obj.userData.billboard) obj.lookAt(camera.position);
-	});
-
 	// Spin hovered star
 	stars.forEach(star => {
 		if (star.userData.spinning) { 
@@ -351,6 +341,24 @@ function animate() {
 				star.userData.spinning = false;
 			}
 		}
+
+		//star.material.opacity = Math.random();
+		if (star.userData.sparks) {
+  			const time = performance.now() * 0.001;
+			star.userData.sparks.forEach((sprite) => {
+			const { basePos, speed, phase } = sprite.userData;
+
+			// make them gently bob around their base position
+			sprite.position.set(
+				basePos.x + Math.sin(time * speed + phase) * 0.5,
+				basePos.y + Math.cos(time * speed + phase) * 0.5,
+				basePos.z + Math.sin(time * speed * 0.8 + phase) * 0.5
+			);
+
+			// flicker opacity
+			sprite.material.opacity = 0.6 + Math.sin(time * speed * 3 + phase) * 0.4;
+			});
+		}
 	});
 
 	// Click star 
@@ -358,8 +366,8 @@ function animate() {
 		const tLinear = Math.min((now - zoomStart) / zoomDuration, 1);
 		const t = easeInOutCubic(tLinear); // apply easing
 
-		const targetPos = targetStar.position.clone().add(new THREE.Vector3(0, 0, 3));
-		camera.position.lerpVectors(camera.position, targetPos, t);
+		const targetPos = targetStar.position.clone().add(new THREE.Vector3(0, 0, -10));
+		camera.position.lerpVectors(zoomStartPos, targetPos, t);
 		camera.lookAt(targetStar.position);
 
 		if (tLinear >= 1) {
