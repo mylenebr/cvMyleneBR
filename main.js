@@ -23,6 +23,8 @@ let lightPink = 0xFFC2DE;
 let darkPink = 0x5C1F36;
 let backgroundPink = 0x614850; //0xC7B1BD;
 
+let textMesh, textPositions, originalPositions;
+
 // Star poses
 const starPoses = [
     new THREE.Vector3(-250, 50, 10),
@@ -46,26 +48,23 @@ function header()
 		'fonts/optimer_bold.typeface.json',
 		function (font) {
 			const textGeo = new TextGeometry("Mylène Bénier-Rollet", {
-			font: font,
-			size: 20,
-			depth: 5,
-			height: 0,
-			curveSegments: 8
+				font: font,
+				size: 20,
+				depth: 5,
+				height: 0,
+				curveSegments: 8
 			});
-
-			// Center text above the star
-			textGeo.computeBoundingBox();
-			const w = textGeo.boundingBox.max.x - textGeo.boundingBox.min.x;
-			const d = 1;
-			//textGeo.translate(-w / 2, 1.5, d); // X center, Y above sphere, Z same
-
+			textGeo.center();
+			
 			//const textMat = new THREE.MeshBasicMaterial({ color: 0xffffff });
 			const textMat = new THREE.MeshPhongMaterial({ color: lightPink, metalness: 0.5, roughness: 0.5 });
-			const textMesh = new THREE.Mesh(textGeo, textMat);
-			textMesh.position.set(-150, 100, 10);
+			textMesh = new THREE.Mesh(textGeo, textMat);
+			textMesh.position.set(-50, 100, 10);
 
 			// Attach text to star so it moves/rotates with it
 			scene.add(textMesh);
+			textPositions = textGeo.attributes.position;
+    		originalPositions = textPositions.array.slice();
 		},
 		// onProgress callback
 		function ( xhr ) {
@@ -146,11 +145,11 @@ function createStar(pos, starName, starPage)
 		'fonts/optimer_bold.typeface.json',
 		function (font) {
 			const textGeo = new TextGeometry(starPage, {
-			font: font,
-			size: 10,
-			depth: 5,
-			height: 0,
-			curveSegments: 8
+				font: font,
+				size: 10,
+				depth: 5,
+				height: 0,
+				curveSegments: 8
 			});
 
 			// Center text above the star
@@ -365,6 +364,21 @@ function animate() {
 	controls.update();
 
 	const now = performance.now();
+
+	// Animate Name title
+	const nameTime = now * 0.005; // speed factor
+    if (textMesh) { // ✅ only once it's loaded
+		for (let i = 0; i < textPositions.count; i++) {
+			const ox = originalPositions[i * 3];
+			const oy = originalPositions[i * 3 + 1];
+			const oz = originalPositions[i * 3 + 2];
+
+			// Simple vertical wave
+			const wave = Math.sin(nameTime + ox * 0.1) * 2;
+			textPositions.setY(i, oy + wave);
+		}
+		textPositions.needsUpdate = true;
+  }
 
 	// Animate thread sparkles
 	const time = now * 0.0005;
