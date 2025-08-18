@@ -9,7 +9,11 @@ export default {
         rollupOptions: {
         input: {
             main: resolve(__dirname, 'index.html'),
-            s1: resolve(__dirname, 'star1.html'),
+            experience: resolve(__dirname, 'pages/experience.html'),
+            competences: resolve(__dirname, 'pages/competences.html'),
+            presentation: resolve(__dirname, 'pages/presentation.html'),
+            interets: resolve(__dirname, 'pages/interets.html'),
+            cursus: resolve(__dirname, 'pages/cursus.html'),
         }
         }
     }
