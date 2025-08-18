@@ -9,6 +9,7 @@ import { TextGeometry } from 'three/addons/geometries/TextGeometry.js';
 let camera, scene, renderer, controls, raycaster, mouse, parameters;
 let stars = [];
 let sparks = [];
+let nameSparks = [];
 const materials = []; //SF
 
 // Zoom/click on stars
@@ -75,6 +76,26 @@ function header()
 			console.log( 'An error happened' );
 		}
 	);
+
+	// Add sparkles around it
+	const sparkTexture = new THREE.TextureLoader().load('textures/sprites/sparkle.png');
+	const sparkMaterial = new THREE.SpriteMaterial({
+		map: sparkTexture,
+		color: 0xffffaa,
+		transparent: true,
+		blending: THREE.AdditiveBlending,
+    	depthWrite: false 
+	});
+
+	for (let i = 0; i < 1000; i++) {
+		const sprite = new THREE.Sprite(sparkMaterial.clone());
+		sprite.scale.set(1, 1, 1);
+		scene.add(sprite);
+		nameSparks.push({
+			sprite,
+			offset: Math.random() // random start along curve
+		});
+	}
 
 }
 
@@ -358,18 +379,14 @@ function easeInOutCubic(t) {
     : 1 - Math.pow(-2 * t + 2, 3) / 2;
 }
 
-let last = performance.now();
-function animate() {
-    requestAnimationFrame(animate); //pour tubes
-	controls.update();
+///////ANIMATION
 
-	const now = performance.now();
-	const seconds = now / 1000;
-
-	// Animate Name title
+// Animate Name title
+function animNameTitle(now){
 	if (textMesh)
 	{
-		const cycle = 3; // seconds per wave
+		// OLD IMPLEMENTATION : more of a wave
+		/*const cycle = 3; // seconds per wave
 		const t = seconds % cycle; // time inside cycle
 
 		const amplitude = 1;  // wave height
@@ -389,11 +406,87 @@ function animate() {
 			}
 			textPositions.setY(i, y + offset);
 		}
-		textPositions.needsUpdate = true;
-	}
+		textPositions.needsUpdate = true;*/
 
-	// Animate thread sparkles
-	const time = now * 0.0005;
+		let t = clock.getElapsedTime();
+  
+		// wave cycle every 3 seconds
+		let cycle = 3.0;
+		let phase = (t % cycle) / cycle; // goes from 0 → 1
+		
+		// only animate for first half of cycle, rest is straight
+		if (phase < 0.5) {
+			let waveProgress = phase * 2; // normalized 0 → 1
+			
+			textPositions.needsUpdate = true;
+			//const pos = textMesh.geometry.attributes.position;
+			
+			for (let i = 0; i < textPositions.count; i++) {
+				const x = originalPositions[i * 3];
+				const y = originalPositions[i * 3+1];
+				const z = originalPositions[i * 3+2];
+
+				// use x coordinate to stagger the wave left→right
+				let offset = (x - textMesh.geometry.boundingBox.min.x) /
+							(textMesh.geometry.boundingBox.max.x - textMesh.geometry.boundingBox.min.x);
+
+				// letter is affected only when waveProgress reaches it
+				let localPhase = waveProgress - offset;
+				
+				let wave = 0;
+				if (localPhase > 0 && localPhase < 0.2) { 
+					// small window where the wave "hits" the letter
+					wave = Math.sin(localPhase * Math.PI / 0.2) * 7; // adjust amplitude
+				}
+
+				textPositions.setXYZ(i, x, y + wave, z);
+			}
+		} else {
+			// restore to straight line
+			textPositions.needsUpdate = true;
+			//const pos = textMesh.geometry.attributes.position;
+			for (let i = 0; i < textPositions.count; i++) {
+				textPositions.setXYZ(i,
+					textPositions.getX(i),
+					originalPositions[i * 3+1], // reset y
+					textPositions.getZ(i)
+			);
+			}
+		}
+	}
+}
+
+function animNameSparkles(time){
+	nameSparks.forEach(s => {
+		const t = (time * 0.05 + s.offset) % 1; // move forward
+
+		// Base position on curve
+		const i = Math.floor(Math.random() * (textPositions.count + 1));
+		const posx = originalPositions[i * 3];
+		const posy = originalPositions[i * 3+1] +100;
+		const posz = originalPositions[i * 3+2];
+
+		// Find local frame
+		const l = Math.floor(t * frames.tangents.length); 
+		const normal = frames.normals[l];
+		const binormal = frames.binormals[l];
+
+		// Add a small circular offset
+		const angle = time * 2 + s.offset * Math.PI * 2; // spin around
+		const radius = 10; // how far they float away
+		const offset = normal.clone().multiplyScalar(Math.cos(angle) * radius)
+					.add(binormal.clone().multiplyScalar(Math.sin(angle) * radius));
+		const pos = new THREE.Vector3(posx, posy, posz);
+		s.sprite.position.copy(pos.add(offset));
+		s.sprite.position.add(new THREE.Vector3(
+			(Math.random() - 0.5) * 2,
+			(Math.random() - 0.5) * 2,
+			(Math.random() - 0.5) * 2
+		));
+	});
+}
+
+function animThreadSparkles(time){
 	sparks.forEach(s => {
 		const t = (time * 0.05 + s.offset) % 1; // move forward
 
@@ -418,13 +511,13 @@ function animate() {
 			(Math.random() - 0.5) * 2
 		));
 	});
+}
 
-
-	// Spin hovered star
+function spinHoveredStar(now){
 	stars.forEach(star => {
 		if (star.userData.spinning) { 
 			// Spin slowly around Y axis
-			star.rotation.y += 0.005;
+			star.rotation.y += 0.03;
 
 			(Math.cos(star.rotation.y)>0) ? star.position.y += 0.005 : star.position.y -= 0.005;
 
@@ -434,27 +527,11 @@ function animate() {
 				star.userData.spinning = false;
 			}
 		}
-
-		//star.material.opacity = Math.random();
-		if (star.userData.sparks) {
-  			const time = performance.now() * 0.001;
-			star.userData.sparks.forEach((sprite) => {
-			const { basePos, speed, phase } = sprite.userData;
-
-			// make them gently bob around their base position
-			sprite.position.set(
-				basePos.x + Math.sin(time * speed + phase) * 0.5,
-				basePos.y + Math.cos(time * speed + phase) * 0.5,
-				basePos.z + Math.sin(time * speed * 0.8 + phase) * 0.5
-			);
-
-			// flicker opacity
-			sprite.material.opacity = 0.6 + Math.sin(time * speed * 3 + phase) * 0.4;
-			});
-		}
 	});
+}
 
-	// Click star 
+function clickStar(now)
+{
 	if (zooming && targetStar) {
 		const tLinear = Math.min((now - zoomStart) / zoomDuration, 1);
 		const t = easeInOutCubic(tLinear); // apply easing
@@ -470,6 +547,32 @@ function animate() {
 			}, 300);
 		}
 	}
+}
+
+function animate() {
+    requestAnimationFrame(animate); //pour tubes
+	controls.update();
+
+	const now = performance.now();
+	const seconds = now / 1000;
+
+	// Animate Name title
+	animNameTitle(now);
+
+	// Animate name sparkles
+	const time = now * 0.0005;
+	//animNameSparkles(time);
+
+	// Animate thread sparkles
+	//const time = now * 0.0005;
+	animThreadSparkles(time);
+
+	// Spin hovered star
+	spinHoveredStar(now);
+
+	// Click star 
+	clickStar(now);
+
 	render();
 }
 
