@@ -4,14 +4,14 @@ import { TrackballControls } from 'three/addons/controls/TrackballControls.js';
 import { FontLoader } from 'three/addons/loaders/FontLoader.js';
 import { TextGeometry } from 'three/addons/geometries/TextGeometry.js';
 
-let camera, scene, renderer, controls;
+let camera, scene, renderer, controls, raycaster, mouse;
 
 // Colors
 let lightPink = 0xFFC2DE;
 let darkPink = 0x5C1F36;
 let backgroundPink = 0x614850; //0xC7B1BD;
 
-let textMesh, textPositions, originalPositions;
+let textMesh, textPositions, buttonMesh;
 
 init();
 
@@ -33,14 +33,13 @@ function title()
 			textGeo.center();
 			
 			//const textMat = new THREE.MeshBasicMaterial({ color: 0xffffff });
-			const textMat = new THREE.MeshPhongMaterial({ color: lightPink, metalness: 0.5, roughness: 0.5 });
+			const textMat = new THREE.MeshPhongMaterial({color: lightPink});
 			textMesh = new THREE.Mesh(textGeo, textMat);
 			textMesh.position.set(0, 100, 10);
 
 			// Attach text to star so it moves/rotates with it
 			scene.add(textMesh);
 			textPositions = textGeo.attributes.position;
-    		originalPositions = textPositions.array.slice();
 		},
 		// onProgress callback
 		function ( xhr ) {
@@ -51,6 +50,15 @@ function title()
 			console.log( 'An error happened' );
 		}
 	);
+
+
+	// Home page button
+	const texture = new THREE.TextureLoader().load("textures/pictures/cv_picture.jpeg");
+	const buttonGeometry = new THREE.CircleGeometry(30, 30);
+	const buttonMaterial = new THREE.MeshBasicMaterial({map: texture, transparent: false });
+	buttonMesh = new THREE.Mesh(buttonGeometry, buttonMaterial);
+	buttonMesh.position.set(-320, 130, 10); // put it in front of camera
+	scene.add(buttonMesh);
 }
 
 function init() {
@@ -83,9 +91,29 @@ function init() {
 	// Header
 	title();
 
+	// Raycaster setup
+	raycaster = new THREE.Raycaster();
+	mouse = new THREE.Vector2();
+
+	// Events
+	window.addEventListener('click', onClick);
+
+}
+
+
+function onClick(event) {
+	mouse.x = (event.clientX / window.innerWidth) * 2 - 1;
+	mouse.y = -(event.clientY / window.innerHeight) * 2 + 1;
+	raycaster.setFromCamera(mouse, camera);
+
+	const interesectImg = raycaster.intersectObjects([buttonMesh]);
+	if (interesectImg.length > 0) {
+      window.location.href = "index.html"; 
+    }
 }
 
 function animate() {
-  renderer.render(scene, camera);
+	requestAnimationFrame(animate);
+  	renderer.render(scene, camera);
 }
 renderer.setAnimationLoop( animate );

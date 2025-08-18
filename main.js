@@ -43,7 +43,6 @@ init();
 
 function title()
 {
-
 	// Name Title
 	const loaderHeader = new FontLoader();
 	loaderHeader.load(
@@ -59,7 +58,7 @@ function title()
 			textGeo.center();
 			
 			//const textMat = new THREE.MeshBasicMaterial({ color: 0xffffff });
-			const textMat = new THREE.MeshPhongMaterial({ color: lightPink, metalness: 0.5, roughness: 0.5 });
+			const textMat = new THREE.MeshPhongMaterial({ color: lightPink});
 			textMesh = new THREE.Mesh(textGeo, textMat);
 			textMesh.position.set(0, 100, 10);
 
@@ -97,6 +96,16 @@ function title()
 			offset: Math.random() // random start along curve
 		});
 	}*/
+
+	// Home page button
+	const texture = new THREE.TextureLoader().load("textures/pictures/cv_picture.jpeg");
+	const buttonGeometry = new THREE.CircleGeometry(30, 30);
+	const pts = [], numPts = 5;
+
+	const buttonMaterial = new THREE.MeshBasicMaterial({map: texture, transparent: false });
+	const buttonMesh = new THREE.Mesh(buttonGeometry, buttonMaterial);
+	buttonMesh.position.set(-320, 130, 10); // put it in front of camera
+	scene.add(buttonMesh);
 
 }
 
@@ -331,6 +340,7 @@ function init() {
 	raycaster = new THREE.Raycaster();
 	mouse = new THREE.Vector2();
 
+	// Events
 	window.addEventListener('mousemove', onMouseMove);
 	window.addEventListener('click', onClick);
 	window.addEventListener('resize', onWindowResize);
@@ -355,15 +365,19 @@ function onMouseMove(event) {
 }
 
 function onClick(event) {
-  mouse.x = (event.clientX / window.innerWidth) * 2 - 1;
-  mouse.y = -(event.clientY / window.innerHeight) * 2 + 1;
+	mouse.x = (event.clientX / window.innerWidth) * 2 - 1;
+	mouse.y = -(event.clientY / window.innerHeight) * 2 + 1;
+	raycaster.setFromCamera(mouse, camera);
 
-  raycaster.setFromCamera(mouse, camera);
-  const intersects = raycaster.intersectObjects(stars);
+	const intersectsStars = raycaster.intersectObjects(stars);
+	if (intersectsStars.length > 0) {
+		startZoom(intersectsStars[0].object); // store start position
+	}
 
-  if (intersects.length > 0) {
-	startZoom(intersects[0].object); // store start position
-  }
+	const interesectImg = raycaster.intersectObjects([buttonMesh]);
+	if (interesectImg.length > 0) {
+      window.location.href = "index.html"; 
+    }
 }
 
 function onWindowResize() {

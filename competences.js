@@ -11,7 +11,7 @@ let lightPink = 0xFFC2DE;
 let darkPink = 0x5C1F36;
 let backgroundPink = 0x614850; //0xC7B1BD;
 
-let textMesh, textPositions, originalPositions;
+let textMesh, textPositions;
 
 init();
 
@@ -33,14 +33,13 @@ function title()
 			textGeo.center();
 			
 			//const textMat = new THREE.MeshBasicMaterial({ color: 0xffffff });
-			const textMat = new THREE.MeshPhongMaterial({ color: lightPink, metalness: 0.5, roughness: 0.5 });
+			const textMat = new THREE.MeshPhongMaterial({ color: lightPink});
 			textMesh = new THREE.Mesh(textGeo, textMat);
 			textMesh.position.set(0, 100, 10);
 
 			// Attach text to star so it moves/rotates with it
 			scene.add(textMesh);
 			textPositions = textGeo.attributes.position;
-    		originalPositions = textPositions.array.slice();
 		},
 		// onProgress callback
 		function ( xhr ) {
@@ -86,6 +85,7 @@ function init() {
 }
 
 function animate() {
-  renderer.render(scene, camera);
+    requestAnimationFrame(animate);
+  	renderer.render(scene, camera);
 }
 renderer.setAnimationLoop( animate );
