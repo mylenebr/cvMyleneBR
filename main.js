@@ -13,6 +13,9 @@ let nameSparks = [];
 let nameSparkRandIdx = [];
 const materials = []; //SF
 
+// Header
+let textMesh, textPositions, originalPositions, buttonMesh;
+
 // Zoom/click on stars
 let targetStar = null; // the star we clicked
 let zooming = false;
@@ -24,8 +27,6 @@ let zoomStartPos = null;
 let lightPink = 0xFFC2DE;
 let darkPink = 0x5C1F36;
 let backgroundPink = 0x614850; //0xC7B1BD;
-
-let textMesh, textPositions, originalPositions;
 
 // Star poses
 const starPoses = [
@@ -96,17 +97,16 @@ function title()
 			offset: Math.random() // random start along curve
 		});
 	}*/
+}
 
-	// Home page button
+function homePageButton()
+{
 	const texture = new THREE.TextureLoader().load("textures/pictures/cv_picture.jpeg");
 	const buttonGeometry = new THREE.CircleGeometry(30, 30);
-	const pts = [], numPts = 5;
-
 	const buttonMaterial = new THREE.MeshBasicMaterial({map: texture, transparent: false });
-	const buttonMesh = new THREE.Mesh(buttonGeometry, buttonMaterial);
+	buttonMesh = new THREE.Mesh(buttonGeometry, buttonMaterial);
 	buttonMesh.position.set(-320, 130, 10); // put it in front of camera
 	scene.add(buttonMesh);
-
 }
 
 function createSparkleSprites(mesh, count = 200, radius = 50) {
@@ -317,6 +317,7 @@ function init() {
 
 	// Header
 	title();
+	homePageButton();
 
 	// Snow Particles
 	snowParticles();
@@ -355,12 +356,12 @@ function onMouseMove(event) {
 
   // If hovering, start spin if not already spinning
   intersects.forEach(intersect => {
-    const star = intersect.object;
-    if (!star.userData.spinning) {
-      star.userData.spinning = true;
-      star.userData.startRotation = star.rotation.y;
-      star.userData.targetRotation = star.rotation.y + Math.PI * 2; // 1 full spin
-    }
+	const star = intersect.object;
+		if (!star.userData.spinning) {
+		star.userData.spinning = true;
+		star.userData.startRotation = star.rotation.y;
+		star.userData.targetRotation = star.rotation.y + Math.PI * 2; // 1 full spin
+	}
   });
 }
 
@@ -369,11 +370,13 @@ function onClick(event) {
 	mouse.y = -(event.clientY / window.innerHeight) * 2 + 1;
 	raycaster.setFromCamera(mouse, camera);
 
+	// Star
 	const intersectsStars = raycaster.intersectObjects(stars);
 	if (intersectsStars.length > 0) {
 		startZoom(intersectsStars[0].object); // store start position
 	}
 
+	// Home Page Button
 	const interesectImg = raycaster.intersectObjects([buttonMesh]);
 	if (interesectImg.length > 0) {
       window.location.href = "index.html"; 

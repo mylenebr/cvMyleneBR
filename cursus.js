@@ -4,14 +4,15 @@ import { TrackballControls } from 'three/addons/controls/TrackballControls.js';
 import { FontLoader } from 'three/addons/loaders/FontLoader.js';
 import { TextGeometry } from 'three/addons/geometries/TextGeometry.js';
 
-let camera, scene, renderer, controls;
+let camera, scene, renderer, controls, raycaster, mouse;
 
 // Colors
 let lightPink = 0xFFC2DE;
 let darkPink = 0x5C1F36;
 let backgroundPink = 0x614850; //0xC7B1BD;
 
-let textMesh, textPositions;
+// Header
+let textMesh, buttonMesh;
 
 init();
 
@@ -39,7 +40,6 @@ function title()
 
 			// Attach text to star so it moves/rotates with it
 			scene.add(textMesh);
-			textPositions = textGeo.attributes.position;
 		},
 		// onProgress callback
 		function ( xhr ) {
@@ -50,6 +50,16 @@ function title()
 			console.log( 'An error happened' );
 		}
 	);
+}
+
+function homePageButton()
+{
+	const texture = new THREE.TextureLoader().load("textures/pictures/cv_picture.jpeg");
+	const buttonGeometry = new THREE.CircleGeometry(30, 30);
+	const buttonMaterial = new THREE.MeshBasicMaterial({map: texture, transparent: false });
+	buttonMesh = new THREE.Mesh(buttonGeometry, buttonMaterial);
+	buttonMesh.position.set(-320, 130, 10); // put it in front of camera
+	scene.add(buttonMesh);
 }
 
 function init() {
@@ -81,7 +91,26 @@ function init() {
 
 	// Header
 	title();
+	homePageButton();
 
+	// Raycaster setup
+	raycaster = new THREE.Raycaster();
+	mouse = new THREE.Vector2();
+
+	// Events
+	window.addEventListener('click', onClick);
+}
+
+function onClick(event) {
+	mouse.x = (event.clientX / window.innerWidth) * 2 - 1;
+	mouse.y = -(event.clientY / window.innerHeight) * 2 + 1;
+	raycaster.setFromCamera(mouse, camera);
+
+	// Home Page Button
+	const interesectImg = raycaster.intersectObjects([buttonMesh]);
+	if (interesectImg.length > 0) {
+      window.location.href = "index.html"; 
+    }
 }
 
 function animate() {
