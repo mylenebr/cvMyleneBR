@@ -14,7 +14,7 @@ let nameSparkRandIdx = [];
 const materials = []; //SF
 
 // Header
-let textMesh, textPositions, originalPositions, buttonMesh;
+let textMesh, textPositions, originalPositions, buttonMesh, frameMesh;
 
 // Zoom/click on stars
 let targetStar = null; // the star we clicked
@@ -101,12 +101,20 @@ function title()
 
 function homePageButton()
 {
+	// Picture Button
 	const texture = new THREE.TextureLoader().load("textures/pictures/cv_picture.jpeg");
 	const buttonGeometry = new THREE.CircleGeometry(30, 30);
 	const buttonMaterial = new THREE.MeshBasicMaterial({map: texture, transparent: false });
 	buttonMesh = new THREE.Mesh(buttonGeometry, buttonMaterial);
 	buttonMesh.position.set(-320, 130, 10); // put it in front of camera
 	scene.add(buttonMesh);
+
+	// Pink Frame
+	const frameGeometry = new THREE.CircleGeometry(32, 32);
+	const frameMaterial = new THREE.MeshPhongMaterial({ color: lightPink});
+	frameMesh = new THREE.Mesh(frameGeometry, frameMaterial);
+	frameMesh.position.set(-320, 130, 9.9); // put it in front of camera
+	scene.add(frameMesh);
 }
 
 function createSparkleSprites(mesh, count = 200, radius = 50) {

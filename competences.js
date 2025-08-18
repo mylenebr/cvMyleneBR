@@ -12,7 +12,7 @@ let darkPink = 0x5C1F36;
 let backgroundPink = 0x614850; //0xC7B1BD;
 
 // Header
-let textMesh, buttonMesh;
+let textMesh, buttonMesh, frameMesh;
 
 init();
 
@@ -54,12 +54,20 @@ function title()
 
 function homePageButton()
 {
+	// Picture Button
 	const texture = new THREE.TextureLoader().load("textures/pictures/cv_picture.jpeg");
 	const buttonGeometry = new THREE.CircleGeometry(30, 30);
 	const buttonMaterial = new THREE.MeshBasicMaterial({map: texture, transparent: false });
 	buttonMesh = new THREE.Mesh(buttonGeometry, buttonMaterial);
 	buttonMesh.position.set(-320, 130, 10); // put it in front of camera
 	scene.add(buttonMesh);
+
+	// Pink Frame
+	const frameGeometry = new THREE.CircleGeometry(32, 32);
+	const frameMaterial = new THREE.MeshPhongMaterial({ color: lightPink});
+	frameMesh = new THREE.Mesh(frameGeometry, frameMaterial);
+	frameMesh.position.set(-320, 130, 9.9); // put it in front of camera
+	scene.add(frameMesh);
 }
 
 function init() {
