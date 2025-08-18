@@ -1,1 +1,0 @@
-import{d as o,e as r,P as t,W as d}from"./three.module-DOelO-CT.js";let a=6375504;const n=new o;n.background=new r(a);const i=new t(75,window.innerWidth/window.innerHeight,.1,1e3),e=new d;e.setSize(window.innerWidth,window.innerHeight);document.body.appendChild(e.domElement);i.position.z=5;function s(){e.render(n,i)}e.setAnimationLoop(s);
