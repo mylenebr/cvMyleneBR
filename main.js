@@ -313,22 +313,19 @@ function init() {
 	snowParticles();
 
 	// Stars
-	const star1 = createStar(starPoses[0], "star1", "Experience");
-	scene.add(star1); 
-	const star2 = createStar(starPoses[1], "star2", "Compétences");
-	scene.add(star2); 
-	const star3 = createStar(starPoses[2], "star3", "Présentation");
-	scene.add(star3); 
-	const star4 = createStar(starPoses[3], "star4", "Intérets");
-	scene.add(star4); 
-	const star5 = createStar(starPoses[4], "star5", "Cursus");
-	scene.add(star5); 
-
-	stars.push(star1); stars.push(star2); stars.push(star3); stars.push(star4); stars.push(star5);
+	const star_experience = createStar(starPoses[0], "experience", "Experience");
+	scene.add(star_experience); stars.push(star_experience); 
+	const star_competences = createStar(starPoses[1], "competences", "Compétences");
+	scene.add(star_competences); stars.push(star_competences);
+	const star_presentation = createStar(starPoses[2], "presentation", "Présentation");
+	scene.add(star_presentation); stars.push(star_presentation);
+	const star_interets = createStar(starPoses[3], "interets", "Intérets");
+	scene.add(star_interets); stars.push(star_interets);
+	const star_cursus = createStar(starPoses[4], "cursus", "Cursus");
+	scene.add(star_cursus); stars.push(star_cursus);
 
 	// Thread between stars
 	sparklethread();
-
 
 	// Raycaster setup
 	raycaster = new THREE.Raycaster();
@@ -548,7 +545,7 @@ function clickStar(now)
 		if (tLinear >= 1) {
 			zooming = false;
 			setTimeout(() => {
-				window.location.href = `./${targetStar.name}.html`;
+				window.location.href = `./pages/${targetStar.name}.html`;
 			}, 300);
 		}
 	}
