@@ -545,7 +545,7 @@ function clickStar(now)
 		if (tLinear >= 1) {
 			zooming = false;
 			setTimeout(() => {
-				window.location.href = `./pages/${targetStar.name}.html`;
+				window.location.href = `./${targetStar.name}.html`;
 			}, 300);
 		}
 	}
