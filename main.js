@@ -10,6 +10,7 @@ let camera, scene, renderer, controls, raycaster, mouse, parameters;
 let stars = [];
 let sparks = [];
 let nameSparks = [];
+let nameSparkRandIdx = [];
 const materials = []; //SF
 
 // Zoom/click on stars
@@ -77,8 +78,8 @@ function header()
 		}
 	);
 
-	// Add sparkles around it
-	const sparkTexture = new THREE.TextureLoader().load('textures/sprites/sparkle.png');
+	// Add sparkles around it => I dont like it after all
+	/*const sparkTexture = new THREE.TextureLoader().load('textures/sprites/sparkle.png');
 	const sparkMaterial = new THREE.SpriteMaterial({
 		map: sparkTexture,
 		color: 0xffffaa,
@@ -89,13 +90,13 @@ function header()
 
 	for (let i = 0; i < 1000; i++) {
 		const sprite = new THREE.Sprite(sparkMaterial.clone());
-		sprite.scale.set(1, 1, 1);
+		sprite.scale.set(1.5, 1.5, 1.5);
 		scene.add(sprite);
 		nameSparks.push({
 			sprite,
 			offset: Math.random() // random start along curve
 		});
-	}
+	}*/
 
 }
 
@@ -238,7 +239,7 @@ function snowParticles(){
 	sprite2.colorSpace = THREE.SRGBColorSpace;
 	const sprite3 = textureLoader.load('textures/sprites/snowflake5.png', assignSRGB);
 	sprite3.colorSpace = THREE.SRGBColorSpace;
-	for ( let i = 0; i < 5000; i ++ ) {
+	for ( let i = 0; i < 2000; i ++ ) {
 		const x = Math.random() * 2000 - 1000;
 		const y = Math.random() * 2000 - 1000;
 		const z = Math.random() * 2000 - 1000;
@@ -262,9 +263,10 @@ function snowParticles(){
 			transparent: true });
 		materials[i].color.setHSL(color[0], color[1], color[2]);
 		const particles = new THREE.Points(geometry, materials[i]);
-		particles.rotation.x = Math.random() * 6;
-		particles.rotation.y = Math.random() * 6;
-		particles.rotation.z = Math.random() * 6;
+		const factRot = 6;
+		particles.rotation.x = Math.random() * factRot;
+		particles.rotation.y = Math.random() * factRot;
+		particles.rotation.z = Math.random() * factRot;
 		scene.add(particles);
 	}
 }
@@ -457,14 +459,17 @@ function animNameTitle(now){
 }
 
 function animNameSparkles(time){
+	const pathSpeed = 0.01;   // movement along curve
+	const spinSpeed = 0.5; 
 	nameSparks.forEach(s => {
-		const t = (time * 0.05 + s.offset) % 1; // move forward
+		const t = (time * pathSpeed + s.offset) % 1; // move forward
 
 		// Base position on curve
-		const i = Math.floor(Math.random() * (textPositions.count + 1));
-		const posx = originalPositions[i * 3];
-		const posy = originalPositions[i * 3+1] +100;
-		const posz = originalPositions[i * 3+2];
+		//const r = nameSparkRandIdx[s.offset];
+		const r = Math.floor(Math.random() * (textPositions.count + 1));
+		const posx = originalPositions[r * 3];
+		const posy = originalPositions[r * 3+1] +110;
+		const posz = originalPositions[r * 3+2];
 
 		// Find local frame
 		const l = Math.floor(t * frames.tangents.length); 
@@ -472,17 +477,17 @@ function animNameSparkles(time){
 		const binormal = frames.binormals[l];
 
 		// Add a small circular offset
-		const angle = time * 2 + s.offset * Math.PI * 2; // spin around
-		const radius = 10; // how far they float away
+		const angle = time * spinSpeed + s.offset * Math.PI * 2; // spin around
+		const radius = 1; // how far they float away
 		const offset = normal.clone().multiplyScalar(Math.cos(angle) * radius)
 					.add(binormal.clone().multiplyScalar(Math.sin(angle) * radius));
 		const pos = new THREE.Vector3(posx, posy, posz);
 		s.sprite.position.copy(pos.add(offset));
-		s.sprite.position.add(new THREE.Vector3(
+		/*s.sprite.position.add(new THREE.Vector3(
 			(Math.random() - 0.5) * 2,
 			(Math.random() - 0.5) * 2,
 			(Math.random() - 0.5) * 2
-		));
+		));*/
 	});
 }
 
@@ -517,7 +522,7 @@ function spinHoveredStar(now){
 	stars.forEach(star => {
 		if (star.userData.spinning) { 
 			// Spin slowly around Y axis
-			star.rotation.y += 0.03;
+			star.rotation.y += 0.05;
 
 			(Math.cos(star.rotation.y)>0) ? star.position.y += 0.005 : star.position.y -= 0.005;
 
@@ -554,14 +559,19 @@ function animate() {
 	controls.update();
 
 	const now = performance.now();
-	const seconds = now / 1000;
+	const time = now * 0.0005;
 
 	// Animate Name title
 	animNameTitle(now);
 
 	// Animate name sparkles
-	const time = now * 0.0005;
-	//animNameSparkles(time);
+	/*if (textMesh)
+	{
+		for (let i = 0; i < 1000; i++) {
+			nameSparkRandIdx.push(Math.floor(Math.random() * (textPositions.count + 1)));
+		}
+		animNameSparkles(time*5);
+	}*/
 
 	// Animate thread sparkles
 	//const time = now * 0.0005;
