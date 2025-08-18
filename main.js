@@ -59,7 +59,7 @@ function header()
 			//const textMat = new THREE.MeshBasicMaterial({ color: 0xffffff });
 			const textMat = new THREE.MeshPhongMaterial({ color: lightPink, metalness: 0.5, roughness: 0.5 });
 			textMesh = new THREE.Mesh(textGeo, textMat);
-			textMesh.position.set(-50, 100, 10);
+			textMesh.position.set(0, 100, 10);
 
 			// Attach text to star so it moves/rotates with it
 			scene.add(textMesh);
@@ -364,21 +364,33 @@ function animate() {
 	controls.update();
 
 	const now = performance.now();
+	const seconds = now / 1000;
 
 	// Animate Name title
-	const nameTime = now * 0.005; // speed factor
-    if (textMesh) { // ✅ only once it's loaded
-		for (let i = 0; i < textPositions.count; i++) {
-			const ox = originalPositions[i * 3];
-			const oy = originalPositions[i * 3 + 1];
-			const oz = originalPositions[i * 3 + 2];
+	if (textMesh)
+	{
+		const cycle = 3; // seconds per wave
+		const t = seconds % cycle; // time inside cycle
 
-			// Simple vertical wave
-			const wave = Math.sin(nameTime + ox * 0.1) * 2;
-			textPositions.setY(i, oy + wave);
+		const amplitude = 1;  // wave height
+		const wavelength = 0.03; // wave density
+		const speed = 2 * Math.PI; // controls movement speed
+
+		//const position = originalPositions;
+		for (let i = 0; i < textPositions.count; i++) {
+			const x = originalPositions[i * 3];
+			const y = originalPositions[i * 3+1];
+			const z = originalPositions[i * 3+2];
+			let offset = 0;
+			if (t < 1) { 
+				// wave happens only in the first half of the cycle
+				const phase = t * speed; 
+				offset = Math.sin(x * wavelength - phase) * amplitude;
+			}
+			textPositions.setY(i, y + offset);
 		}
 		textPositions.needsUpdate = true;
-  }
+	}
 
 	// Animate thread sparkles
 	const time = now * 0.0005;
