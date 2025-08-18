@@ -41,7 +41,7 @@ const frames = curve.computeFrenetFrames(100, true); // precompute 100 segments
 
 init();
 
-function header()
+function title()
 {
 
 	// Name Title
@@ -307,7 +307,7 @@ function init() {
 	scene.add(light);
 
 	// Header
-	header();
+	title();
 
 	// Snow Particles
 	snowParticles();
