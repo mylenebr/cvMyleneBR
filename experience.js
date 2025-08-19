@@ -8,7 +8,7 @@ let camera, scene, renderer, controls, raycaster, mouse;
 
 // Colors
 let lightPink = 0xFFE3F0;
-let darkPink = 0x5C1F36;
+let darkPink = 0x5C1F36; // rgb = 92, 31, 54 
 let backgroundPink = 0x614850; //0xC7B1BD;
 let black = 0x000000;
 
@@ -54,17 +54,18 @@ const yearsPos = [
 
 // Logos
 const logosName = [
-	"maths.jpg", "reseaux.webp", "mcdo.png", "pb.jpeg", "pb.jpeg", "pb.jpeg"
+	"maths.jpg", "reseaux.webp", "mcdo.jpg", "pb.jpeg", "pb.jpeg", "pb.jpeg"
 ];
 const logosPos = [
-	new THREE.Vector3(-350, -50+yArrow, 10), // Maths 2018
-	new THREE.Vector3(-260, 20+yArrow, 10), // Stage rectorat 2021
-	new THREE.Vector3(-170, -50+yArrow, 10), //  McDo 2022
-	new THREE.Vector3(-70, 20+yArrow, 10), // FOLKS Pipeline 2022-2023
-	new THREE.Vector3(50, -50+yArrow, 10), // FOLKS interniship 2023-2024
-	new THREE.Vector3(170, 20+yArrow, 10), // FOLKS R&D 2024-2025
+	new THREE.Vector3(-350, -60+yArrow, 10), // Maths 2018
+	new THREE.Vector3(-260, 30+yArrow, 10), // Stage rectorat 2021
+	new THREE.Vector3(-170, -60+yArrow, 10), //  McDo 2022
+	new THREE.Vector3(-70, 30+yArrow, 10), // FOLKS Pipeline 2022-2023
+	new THREE.Vector3(50, -60+yArrow, 10), // FOLKS interniship 2023-2024
+	new THREE.Vector3(170, 30+yArrow, 10), // FOLKS R&D 2024-2025
 ];
 let logos = [];
+let logoFrames = [];
 let logoMesh;
 
 init();
@@ -185,19 +186,20 @@ function addLogos(){
 	{
 		// Picture Logo
 		const texture = new THREE.TextureLoader().load(`textures/pictures/${logosName[i]}`);
-		const logoGeometry = new THREE.PlaneGeometry(30, 30);
+		const logoGeometry = new THREE.CircleGeometry(20, 20);
 		const buttonMaterial = new THREE.MeshBasicMaterial({map: texture, transparent: false });
 		logoMesh = new THREE.Mesh(logoGeometry, buttonMaterial);
 		logoMesh.position.set(logosPos[i].x, logosPos[i].y, logosPos[i].z); // put it in front of camera
-		scene.add(logoMesh);
+		scene.add(logoMesh); 
 		logos.push(logoMesh);
 
 		// Frame
-		/*const frameGeometry = new THREE.PlaneGeometry(21, 21);
-		const frameMaterial = new THREE.MeshPhongMaterial({color: lightPink});
+		const frameGeometry = new THREE.CircleGeometry(22, 22);
+		const frameMaterial = new THREE.MeshPhongMaterial({color: darkPink});
 		frameMesh = new THREE.Mesh(frameGeometry, frameMaterial);
 		frameMesh.position.set(logosPos[i].x, logosPos[i].y, logosPos[i].z-0.1); // put it in front of camera
-		scene.add(frameMesh);*/
+		scene.add(frameMesh);
+		logoFrames.push(frameMesh);
 	}
 }
 
@@ -260,17 +262,53 @@ function onClick(event) {
       window.location.href = "index.html"; 
     }
 
-  	const intersectLogo = raycaster.intersectObjects([logos[0]]);
-	const popup = document.getElementById("popup");
-	if (intersectLogo.length > 0) {
-		popup.style.display = "block"; // show popup
-		popup.style.top = event.clientY + "px";
-		popup.style.left = event.clientX + "px";
-		popup.innerHTML = "You clicked the cube!";
+  	const intersectLogoMath = raycaster.intersectObjects([logos[0]]);
+	const popupMath = document.getElementById("popupMath");
+	if (intersectLogoMath.length > 0) {
+		popupMath.style.display = "block"; 
 	}else {
-		// Hide popup
-		popup.style.display = "none";
-  }
+		popupMath.style.display = "none";
+  	}
+
+  	const intersectLogoNetwork = raycaster.intersectObjects([logos[1]]);
+	const popupNetwork = document.getElementById("popupNetwork");
+	if (intersectLogoNetwork.length > 0) {
+		popupNetwork.style.display = "block"; 
+	}else {
+		popupNetwork.style.display = "none";
+  	}
+
+  	const intersectLogoMcdo = raycaster.intersectObjects([logos[2]]);
+	const popupMcdo = document.getElementById("popupMcdo");
+	if (intersectLogoMcdo.length > 0) {
+		popupMcdo.style.display = "block"; 
+	}else {
+		popupMcdo.style.display = "none";
+  	}
+
+  	const intersectLogoPipe = raycaster.intersectObjects([logos[3]]);
+	const popupPipe = document.getElementById("popupPipe");
+	if (intersectLogoPipe.length > 0) {
+		popupPipe.style.display = "block"; 
+	}else {
+		popupPipe.style.display = "none";
+  	}
+
+  	const intersectLogoInternPB = raycaster.intersectObjects([logos[4]]);
+	const popupInternPB = document.getElementById("popupInternPB");
+	if (intersectLogoInternPB.length > 0) {
+		popupInternPB.style.display = "block"; 
+	}else {
+		popupInternPB.style.display = "none";
+  	}
+
+  	const intersectLogoPB = raycaster.intersectObjects([logos[5]]);
+	const popupPB = document.getElementById("popupPB");
+	if (intersectLogoPB.length > 0) {
+		popupPB.style.display = "block"; 
+	}else {
+		popupPB.style.display = "none";
+  	}
 }
 
 function animThreadSparkles(time){
@@ -307,10 +345,22 @@ function animLogos(now){
 			0
 		));
 	});
+
+	logoFrames.forEach(logoFrame => {
+		const seconds = Math.floor(now / 1000);
+		const y = (seconds % 2) ? 0.005 : -0.005;
+
+		logoFrame.position.add(new THREE.Vector3(
+			0,
+			y,
+			0
+		));
+	});
 }
 
 function animate() {
 	requestAnimationFrame(animate);
+	controls.update();
 
 	const now = performance.now();
 	const time = now * 0.0005;

@@ -578,7 +578,7 @@ function clickStar(now)
 }
 
 function animate() {
-    requestAnimationFrame(animate); //pour tubes
+    requestAnimationFrame(animate);
 	controls.update();
 
 	const now = performance.now();

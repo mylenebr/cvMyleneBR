@@ -1,22 +1,96 @@
 <!DOCTYPE html>
 <html lang="fr">
 <head>
-  <title>Expérience</title>
+  <title>Exp&eacute;rience</title>
   <style>
-    #popup {
-      position: absolute;
-      top: 50px;
-      left: 50px;
+    div {
+      position: fixed;       /* fixed to viewport */
+      top: 20px;             /* distance from top */
+      right: 20px;           /* distance from right */
       padding: 15px;
-      background: rgba(0,0,0,0.8);
+      background: rgba(92, 31, 54 ,0.8);
       color: white;
       border-radius: 8px;
-      display: none;
+      display: none;         /* start hidden */
+      max-width: 500px;
     }
   </style>
 </head>
 <body>
-  <div id="popup">Hello, I’m a popup 🎉</div>
+  <div id="popupMath">
+    <h1>
+      Cours de Math&eacute;matiques
+    </h1>
+    <h3>
+      De 2018 &agrave; 2021
+    </h3>
+    <p>
+      Aide &agrave; la maison d'&eacute;l&egrave; de coll&egrave;ge et lyc&eacute;e.
+    </p>
+  </div>
+
+  <div id="popupNetwork">
+    <h1>
+      Stage R&eacute;seaux
+    </h1>
+    <h3>
+      Juillet et Ao&ucirc;t 2021
+    </h3>
+    <p>
+      Mise en place de cartes r&eacute;seaux, d&eacute;couvertes de 
+      l'informatique dans le monde du travail.
+    </p>
+  </div>
+
+
+  <div id="popupMcdo">
+    <h1>
+      Equipiere polyvalente chez McDonal's
+    </h1>
+    <h3>
+      Janvier &agrave; Avril 2022
+    </h3>
+    <p>
+    Pr&eacute;paration des commandes, cuisine, garder le restaurant propre, r&eacute;pondre 
+    aux questions des clients.
+    </p>
+  </div>
+
+  <div id="popupPipe">
+    <h1>
+      D&eacute;veloppeuse pipeline chez Pitch Black
+    </h1>
+    <h3>
+      Novembre 2022 &agrave; Septembre 2023
+    </h3>
+    <p>
+    D&eacute;veloppement d&apos;outils diverses &agrave; la demande des artistes de l&apos;entreprise.
+    </p>
+  </div>
+
+  <div id="popupInternPB">
+    <h1>
+      Stage d&eacute;veloppeuse pipeline R&D chez Pitch Black
+    </h1>
+    <h3>
+      De Septembre 2023 &agrave; F&eacute;vrier 2024
+    </h3>
+    <p>
+    D&eacute;veloppement d&apos;un outil de &quot;Texture Bombing&quot; dans le logiciel Houdini.
+    </p>
+  </div>
+
+  <div id="popupPB">
+    <h1>
+      D&eacute;veloppeuse pipeline R&D chez Pitch Black
+    </h1>
+    <h3>
+      De F&eacute;vrier 2024 &agrave; Juillet 2025
+    </h3>
+    <p>
+    Recherche et D&eacute;veloppement d&apos;outils 3D innovants pour les artistes de 
+    l&apos;entreprise.
+  </div>
   <script type="module" src="experience.js"></script>
 </body>
 </html>
