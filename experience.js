@@ -10,6 +10,7 @@ let camera, scene, renderer, controls, raycaster, mouse;
 let lightPink = 0xFFE3F0;
 let darkPink = 0x5C1F36;
 let backgroundPink = 0x614850; //0xC7B1BD;
+let black = 0x000000;
 
 // Header 
 let textMesh, buttonMesh, frameMesh;
@@ -50,6 +51,21 @@ const yearsPos = [
 	new THREE.Vector3(100, yYears, 10),
 	new THREE.Vector3(200, yYears, 10),
 ];
+
+// Logos
+const logosName = [
+	"maths.jpg", "reseaux.webp", "mcdo.png", "pb.jpeg", "pb.jpeg", "pb.jpeg"
+];
+const logosPos = [
+	new THREE.Vector3(-350, -50+yArrow, 10), // Maths 2018
+	new THREE.Vector3(-260, 20+yArrow, 10), // Stage rectorat 2021
+	new THREE.Vector3(-170, -50+yArrow, 10), //  McDo 2022
+	new THREE.Vector3(-70, 20+yArrow, 10), // FOLKS Pipeline 2022-2023
+	new THREE.Vector3(50, -50+yArrow, 10), // FOLKS interniship 2023-2024
+	new THREE.Vector3(170, 20+yArrow, 10), // FOLKS R&D 2024-2025
+];
+let logos = [];
+let logoMesh;
 
 init();
 
@@ -163,6 +179,28 @@ function createDates()
 	}
 }
 
+function addLogos(){
+
+	for(let i=0; i<6; i++)
+	{
+		// Picture Logo
+		const texture = new THREE.TextureLoader().load(`textures/pictures/${logosName[i]}`);
+		const logoGeometry = new THREE.PlaneGeometry(30, 30);
+		const buttonMaterial = new THREE.MeshBasicMaterial({map: texture, transparent: false });
+		logoMesh = new THREE.Mesh(logoGeometry, buttonMaterial);
+		logoMesh.position.set(logosPos[i].x, logosPos[i].y, logosPos[i].z); // put it in front of camera
+		scene.add(logoMesh);
+		logos.push(logoMesh);
+
+		// Frame
+		/*const frameGeometry = new THREE.PlaneGeometry(21, 21);
+		const frameMaterial = new THREE.MeshPhongMaterial({color: lightPink});
+		frameMesh = new THREE.Mesh(frameGeometry, frameMaterial);
+		frameMesh.position.set(logosPos[i].x, logosPos[i].y, logosPos[i].z-0.1); // put it in front of camera
+		scene.add(frameMesh);*/
+	}
+}
+
 function init() {
 
 	// Renderer
@@ -199,6 +237,9 @@ function init() {
 
 	// Dates
 	createDates();
+
+	// Logos
+	addLogos();
 
 	// Raycaster setup
 	raycaster = new THREE.Raycaster();
@@ -243,6 +284,19 @@ function animThreadSparkles(time){
 	});
 }
 
+function animLogos(now){
+	logos.forEach(logo => {
+		const seconds = Math.floor(now / 1000);
+		const y = (seconds % 2) ? 0.005 : -0.005;
+
+		logo.position.add(new THREE.Vector3(
+			0,
+			y,
+			0
+		));
+	});
+}
+
 function animate() {
 	requestAnimationFrame(animate);
 
@@ -251,6 +305,9 @@ function animate() {
 
 	// Animate thread sparkles
 	animThreadSparkles(time);
+
+	// Animate logos
+	animLogos(now);
 
   	renderer.render(scene, camera);
 }
