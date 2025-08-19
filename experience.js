@@ -259,6 +259,18 @@ function onClick(event) {
 	if (interesectImg.length > 0) {
       window.location.href = "index.html"; 
     }
+
+  	const intersectLogo = raycaster.intersectObjects([logos[0]]);
+	const popup = document.getElementById("popup");
+	if (intersectLogo.length > 0) {
+		popup.style.display = "block"; // show popup
+		popup.style.top = event.clientY + "px";
+		popup.style.left = event.clientX + "px";
+		popup.innerHTML = "You clicked the cube!";
+	}else {
+		// Hide popup
+		popup.style.display = "none";
+  }
 }
 
 function animThreadSparkles(time){
