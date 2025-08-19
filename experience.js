@@ -42,7 +42,7 @@ const years = [
 	"2018", "2021", "2022", "2023", "2024", "2025"
 ];
 
-const yYears = -90+yArrow;
+const yYears = -110+yArrow;
 const yearsPos = [
 	new THREE.Vector3(-350, yYears, 10),
 	new THREE.Vector3(-300, yYears, 10),
@@ -54,7 +54,7 @@ const yearsPos = [
 
 // Logos
 const logosName = [
-	"maths.jpg", "reseaux.webp", "mcdo.jpg", "pb.jpeg", "pb.jpeg", "pb.jpeg"
+	"maths.jpg", "reseaux.jpg", "mcdo.jpg", "pb.jpeg", "pb.jpeg", "pb.jpeg"
 ];
 const logosPos = [
 	new THREE.Vector3(-350, -60+yArrow, 10), // Maths 2018
