@@ -14,6 +14,28 @@ let backgroundPink = 0x614850; //0xC7B1BD;
 // Header 
 let textMesh, buttonMesh, frameMesh;
 
+// XP poses
+let sparks = [];
+const yArrow = -30;
+const xpPoses = [
+	new THREE.Vector3(-350, -30+yArrow, 10), // Maths
+	new THREE.Vector3(-330, -30+yArrow, 10), // Maths
+	new THREE.Vector3(-260, 0+yArrow, 10), // McDo
+	new THREE.Vector3(-170, -30+yArrow, 10), // Stage rectorat
+	new THREE.Vector3(-70, 0+yArrow, 10), // FOLKS Pipeline
+	new THREE.Vector3(50, -30+yArrow, 10), // FOLKS interniship
+	new THREE.Vector3(170, 0+yArrow, 10), // FOLKS R&D
+	new THREE.Vector3(250, -30+yArrow, 10),
+	new THREE.Vector3(300, 0+yArrow, 10),
+	// Arrow
+	new THREE.Vector3(300, -10+yArrow, 10),
+	new THREE.Vector3(310, 0+yArrow, 10),
+	new THREE.Vector3(300, 10+yArrow, 10),
+	new THREE.Vector3(305, 0+yArrow, 10),
+];
+const curve = new THREE.CatmullRomCurve3(xpPoses);
+const frames = curve.computeFrenetFrames(100, true);
+
 init();
 
 function title()
@@ -69,6 +91,28 @@ function homePageButton()
 	scene.add(frameMesh);
 }
 
+function sparklethread()
+{
+	const sparkTexture = new THREE.TextureLoader().load('textures/sprites/sparkle.png');
+	const sparkMaterial = new THREE.SpriteMaterial({
+		map: sparkTexture,
+		color: 0x8F8F8F,
+		transparent: true,
+		blending: THREE.AdditiveBlending,
+		depthWrite: false 
+	});
+
+	for (let i = 0; i < 2000; i++) {
+		const sprite = new THREE.Sprite(sparkMaterial.clone());
+		sprite.scale.set(1, 1, 1);
+		scene.add(sprite);
+		sparks.push({
+			sprite,
+			offset: Math.random() // random start along curve
+		});
+	}
+}
+
 function init() {
 
 	// Renderer
@@ -100,6 +144,9 @@ function init() {
 	title();
 	homePageButton();
 
+	// Arrow
+	sparklethread();
+
 	// Raycaster setup
 	raycaster = new THREE.Raycaster();
 	mouse = new THREE.Vector2();
@@ -120,8 +167,38 @@ function onClick(event) {
     }
 }
 
+function animThreadSparkles(time){
+	sparks.forEach(s => {
+		const t = (time * 0.05 + s.offset) % 1; // move forward
+
+		// Base position on curve
+		const pos = curve.getPointAt(t);
+
+		// Find local frame
+		const l = Math.floor(t * frames.tangents.length); 
+		const normal = frames.normals[l];
+		const binormal = frames.binormals[l];
+		
+		const offset = normal.clone().add(binormal.clone());
+
+		s.sprite.position.copy(pos.clone().add(offset));
+		s.sprite.position.add(new THREE.Vector3(
+			(Math.random() - 0.5) * 2,
+			(Math.random() - 0.5) * 2,
+			(Math.random() - 0.5) * 2
+		));
+	});
+}
+
 function animate() {
 	requestAnimationFrame(animate);
+
+	const now = performance.now();
+	const time = now * 0.0005;
+
+	// Animate thread sparkles
+	animThreadSparkles(time);
+
   	renderer.render(scene, camera);
 }
 renderer.setAnimationLoop( animate );
