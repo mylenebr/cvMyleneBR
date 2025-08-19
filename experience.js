@@ -26,11 +26,11 @@ function title()
 			const textGeo = new TextGeometry("Expérience", {
 				font: font,
 				size: 20,
-				depth: 5,
+				depth: 2,
 				height: 0,
 				curveSegments: 8
 			});
-			textGeo.center();
+			textGeo.center(); 
 			
 			//const textMat = new THREE.MeshBasicMaterial({ color: 0xffffff });
 			const textMat = new THREE.MeshPhongMaterial({color: lightPink});

@@ -27,7 +27,7 @@ function title()
 			const textGeo = new TextGeometry("Compétences", {
 				font: font,
 				size: 20,
-				depth: 5,
+				depth: 2,
 				height: 0,
 				curveSegments: 8
 			});

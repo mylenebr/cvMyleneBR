@@ -53,7 +53,7 @@ function title()
 			const textGeo = new TextGeometry("Mylène Bénier-Rollet", {
 				font: font,
 				size: 20,
-				depth: 5,
+				depth: 2,
 				height: 0,
 				curveSegments: 8
 			});
@@ -187,7 +187,7 @@ function createStar(pos, starName, starPage)
 			const textGeo = new TextGeometry(starPage, {
 				font: font,
 				size: 10,
-				depth: 5,
+				depth: 2,
 				height: 0,
 				curveSegments: 8
 			});
