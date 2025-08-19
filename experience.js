@@ -18,13 +18,13 @@ let textMesh, buttonMesh, frameMesh;
 let sparks = [];
 const yArrow = -30;
 const xpPoses = [
-	new THREE.Vector3(-350, -30+yArrow, 10), // Maths
-	new THREE.Vector3(-330, -30+yArrow, 10), // Maths
-	new THREE.Vector3(-260, 0+yArrow, 10), // McDo
-	new THREE.Vector3(-170, -30+yArrow, 10), // Stage rectorat
-	new THREE.Vector3(-70, 0+yArrow, 10), // FOLKS Pipeline
-	new THREE.Vector3(50, -30+yArrow, 10), // FOLKS interniship
-	new THREE.Vector3(170, 0+yArrow, 10), // FOLKS R&D
+	new THREE.Vector3(-350, -30+yArrow, 10), // Maths 2018
+	new THREE.Vector3(-330, -30+yArrow, 10), // Maths 2021
+	new THREE.Vector3(-260, 0+yArrow, 10), // Stage rectorat 2021
+	new THREE.Vector3(-170, -30+yArrow, 10), //  McDo 2022
+	new THREE.Vector3(-70, 0+yArrow, 10), // FOLKS Pipeline 2022-2023
+	new THREE.Vector3(50, -30+yArrow, 10), // FOLKS interniship 2023-2024
+	new THREE.Vector3(170, 0+yArrow, 10), // FOLKS R&D 2024-2025
 	new THREE.Vector3(250, -30+yArrow, 10),
 	new THREE.Vector3(300, 0+yArrow, 10),
 	// Arrow
@@ -35,6 +35,21 @@ const xpPoses = [
 ];
 const curve = new THREE.CatmullRomCurve3(xpPoses);
 const frames = curve.computeFrenetFrames(100, true);
+
+// Dates
+const years = [
+	"2018", "2021", "2022", "2023", "2024", "2025"
+];
+
+const yYears = -90+yArrow;
+const yearsPos = [
+	new THREE.Vector3(-350, yYears, 10),
+	new THREE.Vector3(-300, yYears, 10),
+	new THREE.Vector3(-130, yYears, 10),
+	new THREE.Vector3(0, yYears, 10),
+	new THREE.Vector3(100, yYears, 10),
+	new THREE.Vector3(200, yYears, 10),
+];
 
 init();
 
@@ -113,6 +128,41 @@ function sparklethread()
 	}
 }
 
+function createDates()
+{
+	for(let i = 0; i < 6; i++) {
+		const loaderHeader = new FontLoader();
+		loaderHeader.load(
+			'fonts/optimer_bold.typeface.json',
+			function (font) {
+				const textGeo = new TextGeometry(years[i], {
+					font: font,
+					size: 10,
+					depth: 1,
+					height: 0,
+					curveSegments: 8
+				});
+				textGeo.center();
+				
+				const textMat = new THREE.MeshPhongMaterial({color:lightPink});
+				textMesh = new THREE.Mesh(textGeo, textMat);
+				textMesh.position.set(yearsPos[i].x, yearsPos[i].y, yearsPos[i].z);
+
+				// Attach text to star so it moves/rotates with it
+				scene.add(textMesh);
+			},
+			// onProgress callback
+			function ( xhr ) {
+				console.log( (xhr.loaded / xhr.total * 100) + '% loaded' );
+			},
+			// onError callback
+			function ( err ) {
+				console.log( 'An error happened' );
+			}
+		);
+	}
+}
+
 function init() {
 
 	// Renderer
@@ -145,7 +195,10 @@ function init() {
 	homePageButton();
 
 	// Arrow
-	sparklethread();
+	sparklethread(); 
+
+	// Dates
+	createDates();
 
 	// Raycaster setup
 	raycaster = new THREE.Raycaster();
