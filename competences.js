@@ -7,7 +7,7 @@ import { TextGeometry } from 'three/addons/geometries/TextGeometry.js';
 let camera, scene, renderer, controls, raycaster, mouse;
 
 // Colors
-let lightPink = 0xFFC2DE;
+let lightPink = 0xFFE3F0;
 let darkPink = 0x5C1F36;
 let backgroundPink = 0x614850; //0xC7B1BD;
 

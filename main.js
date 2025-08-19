@@ -24,9 +24,10 @@ let zoomDuration = 1000; // ms (1s)
 let zoomStartPos = null;
 
 // Colors
-let lightPink = 0xFFC2DE;
+let lightPink = 0xFFE3F0;
 let darkPink = 0x5C1F36;
 let backgroundPink = 0x614850; //0xC7B1BD;
+let bgPinkLighter = 0xCDA2B0;
 
 // Star poses
 const starPoses = [
@@ -59,7 +60,7 @@ function title()
 			textGeo.center();
 			
 			//const textMat = new THREE.MeshBasicMaterial({ color: 0xffffff });
-			const textMat = new THREE.MeshPhongMaterial({ color: lightPink});
+			const textMat = new THREE.MeshPhongMaterial({ color:lightPink});
 			textMesh = new THREE.Mesh(textGeo, textMat);
 			textMesh.position.set(0, 100, 10);
 
@@ -159,7 +160,7 @@ function createStar(pos, starName, starPage)
 	}
 	const starShape = new THREE.Shape(pts);
 	const materialExt = new THREE.MeshLambertMaterial( { color: darkPink, wireframe: false } );
-	const materialInt = new THREE.MeshLambertMaterial( { color: lightPink, wireframe: false } );
+	const materialInt = new THREE.MeshLambertMaterial( { color: bgPinkLighter, wireframe: false } );
 	const materials = [ materialInt, materialExt ];
 
 	const starDepth = 20;
@@ -197,7 +198,7 @@ function createStar(pos, starName, starPage)
 			const d = starDepth + 1;
 			textGeo.translate(-w / 2, 1.5, d); // X center, Y above sphere, Z same
 
-			const textMat = new THREE.MeshBasicMaterial({ color: 0xffffff });
+			const textMat = new THREE.MeshBasicMaterial({ color:lightPink });
 			//const textMat = new THREE.MeshPhongMaterial({ color: 0xffffff, metalness: 0.5, roughness: 0.5 });
 			const textMesh = new THREE.Mesh(textGeo, textMat);
 
