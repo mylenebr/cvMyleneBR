@@ -20,19 +20,36 @@ const logosName = [
 	"caml.jpg", "php.png"
 ];
 const xLogos = -330;
-const yLogos = 40
+const yLogos = [
+	30, 6, -18, -43, -66, -90, -114, -138
+]; // 40
 const logosPos = [
-	new THREE.Vector3(xLogos, yLogos-10, 10), 
-	new THREE.Vector3(xLogos, yLogos-34, 10), 
-	new THREE.Vector3(xLogos, yLogos-58, 10),
-	new THREE.Vector3(xLogos, yLogos-83, 10),
-	new THREE.Vector3(xLogos, yLogos-106, 10), 
-	new THREE.Vector3(xLogos, yLogos-130, 10), 
-	new THREE.Vector3(xLogos, yLogos-154, 10), 
-	new THREE.Vector3(xLogos, yLogos-178, 10), 
+	new THREE.Vector3(xLogos, yLogos[0], 10), 
+	new THREE.Vector3(xLogos, yLogos[1], 10), 
+	new THREE.Vector3(xLogos, yLogos[2], 10),
+	new THREE.Vector3(xLogos, yLogos[3], 10),
+	new THREE.Vector3(xLogos, yLogos[4], 10), 
+	new THREE.Vector3(xLogos, yLogos[5], 10), 
+	new THREE.Vector3(xLogos, yLogos[6], 10), 
+	new THREE.Vector3(xLogos, yLogos[7], 10), 
 ];
 let logos = [];
 let logoMesh;
+
+// Prog Stars
+const xStars = [
+	-290, -265, -240, -215,-190
+];
+const starsPos = [
+	new THREE.Vector3(xStars[0], yLogos[0], 10), new THREE.Vector3(xStars[1], yLogos[0], 10), new THREE.Vector3(xStars[2], yLogos[0], 10), new THREE.Vector3(xStars[3], yLogos[0], 10), new THREE.Vector3(xStars[4], yLogos[0], 10),// cpp
+	new THREE.Vector3(xStars[0], yLogos[1], 10), new THREE.Vector3(xStars[1], yLogos[1], 10), new THREE.Vector3(xStars[2], yLogos[1], 10), new THREE.Vector3(xStars[3], yLogos[1], 10), // python
+	new THREE.Vector3(xStars[0], yLogos[2], 10), new THREE.Vector3(xStars[1], yLogos[2], 10), new THREE.Vector3(xStars[2], yLogos[2], 10),// java
+	new THREE.Vector3(xStars[0], yLogos[3], 10), new THREE.Vector3(xStars[1], yLogos[3], 10), new THREE.Vector3(xStars[2], yLogos[3], 10),// js
+	new THREE.Vector3(xStars[0], yLogos[4], 10), new THREE.Vector3(xStars[1], yLogos[4], 10),// c
+	new THREE.Vector3(xStars[0], yLogos[5], 10), new THREE.Vector3(xStars[1], yLogos[5], 10),// html
+	new THREE.Vector3(xStars[0], yLogos[6], 10), new THREE.Vector3(xStars[1], yLogos[6], 10),// caml
+	new THREE.Vector3(xStars[0], yLogos[7], 10),// php
+];
 
 
 init();
@@ -54,6 +71,31 @@ function createRoundedRectShape(width, height, radius) {
     shape.quadraticCurveTo(x, y, x + radius, y);
 
     return shape;
+}
+
+
+function createStar(pos)
+{
+	const pts = [], numPts = 5;
+	for ( let i = 0; i < numPts * 2; i ++ ) {
+		const l = i % 2 == 1 ? 4 : 8;
+		const a = i / numPts * Math.PI;
+		pts.push( new THREE.Vector2(Math.cos(a) * l, Math.sin(a) * l));
+	}
+	const starShape = new THREE.Shape(pts);
+	const material = new THREE.MeshLambertMaterial({ color: lightPink, wireframe: false });
+
+	const starDepth = 2;
+	const extrudeSettings = {
+		depth: starDepth,
+		steps: 1
+	};
+	const starGeo = new THREE.ExtrudeGeometry(starShape, extrudeSettings);
+	const star = new THREE.Mesh(starGeo, material);
+	star.position.set(pos.x, pos.y, pos.z);
+	star.userData.isHovered = false;
+
+	scene.add(star);
 }
 
 // Note : generaliser la fonction de texte car je reutilise le meme code
@@ -165,6 +207,12 @@ function addProgLang()
 		logoMesh.position.set(logosPos[i].x, logosPos[i].y, logosPos[i].z); // put it in front of camera
 		scene.add(logoMesh); 
 		logos.push(logoMesh);
+	}
+
+	// Stars
+	for(let i=0; i<22; i++)
+	{
+		createStar(starsPos[i]);
 	}
 }
 
