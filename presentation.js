@@ -56,7 +56,7 @@ function homePageButton()
 {
 	// Picture Button
 	const texture = new THREE.TextureLoader().load("textures/pictures/cv_picture.jpeg");
-	const buttonGeometry = new THREE.CircleGeometry(30, 30);
+	const buttonGeometry = new THREE.CircleGeometry(30, 32);
 	const buttonMaterial = new THREE.MeshBasicMaterial({map: texture, transparent: false });
 	buttonMesh = new THREE.Mesh(buttonGeometry, buttonMaterial);
 	buttonMesh.position.set(-320, 130, 10); // put it in front of camera

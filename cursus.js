@@ -110,7 +110,7 @@ function homePageButton()
 {
 	// Picture Button
 	const texture = new THREE.TextureLoader().load("textures/pictures/cv_picture.jpeg");
-	const buttonGeometry = new THREE.CircleGeometry(30, 30);
+	const buttonGeometry = new THREE.CircleGeometry(30, 32);
 	const buttonMaterial = new THREE.MeshBasicMaterial({map: texture, transparent: false });
 	buttonMesh = new THREE.Mesh(buttonGeometry, buttonMaterial);
 	buttonMesh.position.set(-320, 130, 10); // put it in front of camera
@@ -187,7 +187,7 @@ function addLogos(){
 	{
 		// Picture Logo
 		const texture = new THREE.TextureLoader().load(`textures/pictures/school/${logosName[i]}`);
-		const logoGeometry = new THREE.CircleGeometry(20, 20);
+		const logoGeometry = new THREE.CircleGeometry(20, 32);
 		const buttonMaterial = new THREE.MeshBasicMaterial({map: texture, transparent: false });
 		logoMesh = new THREE.Mesh(logoGeometry, buttonMaterial);
 		logoMesh.position.set(logosPos[i].x, logosPos[i].y, logosPos[i].z); // put it in front of camera
@@ -195,7 +195,7 @@ function addLogos(){
 		logos.push(logoMesh);
 
 		// Frame
-		const frameGeometry = new THREE.CircleGeometry(22, 22);
+		const frameGeometry = new THREE.CircleGeometry(22, 32);
 		const frameMaterial = new THREE.MeshPhongMaterial({color: darkPink});
 		frameMesh = new THREE.Mesh(frameGeometry, frameMaterial);
 		frameMesh.position.set(logosPos[i].x, logosPos[i].y, logosPos[i].z-0.1); // put it in front of camera

@@ -15,6 +15,24 @@ let backgroundPink = 0x614850; //0xC7B1BD;
 let textMesh, buttonMesh, frameMesh;
 
 // Prog Languages
+const logosName = [
+	"cpp.jpg", "python.png", "java.jpg", "js.png", "c.png", "html.webp",
+	"caml.jpg", "php.png"
+];
+const xLogos = -330;
+const yLogos = 40
+const logosPos = [
+	new THREE.Vector3(xLogos, yLogos-10, 10), 
+	new THREE.Vector3(xLogos, yLogos-34, 10), 
+	new THREE.Vector3(xLogos, yLogos-58, 10),
+	new THREE.Vector3(xLogos, yLogos-83, 10),
+	new THREE.Vector3(xLogos, yLogos-106, 10), 
+	new THREE.Vector3(xLogos, yLogos-130, 10), 
+	new THREE.Vector3(xLogos, yLogos-154, 10), 
+	new THREE.Vector3(xLogos, yLogos-178, 10), 
+];
+let logos = [];
+let logoMesh;
 
 
 init();
@@ -80,7 +98,7 @@ function homePageButton()
 {
 	// Picture Button
 	const texture = new THREE.TextureLoader().load("textures/pictures/cv_picture.jpeg");
-	const buttonGeometry = new THREE.CircleGeometry(30, 30);
+	const buttonGeometry = new THREE.CircleGeometry(30, 32);
 	const buttonMaterial = new THREE.MeshBasicMaterial({map: texture, transparent: false });
 	buttonMesh = new THREE.Mesh(buttonGeometry, buttonMaterial);
 	buttonMesh.position.set(-320, 130, 10); // put it in front of camera
@@ -97,11 +115,11 @@ function homePageButton()
 function addProgLang()
 {
 	// Frame
-	const shape = createRoundedRectShape(200, 200, 10);
+	const shape = createRoundedRectShape(200, 230, 10);
 	const geometry = new THREE.ShapeGeometry(shape);
 	const material = new THREE.MeshStandardMaterial({ color: darkPink, side: THREE.DoubleSide });
 	const roundedPlaneMesh = new THREE.Mesh(geometry, material);
-	roundedPlaneMesh.position.set(-250, -30, 9.9);
+	roundedPlaneMesh.position.set(-250, -40, 9.9);
 	scene.add(roundedPlaneMesh);
 
 	// Title
@@ -136,6 +154,18 @@ function addProgLang()
 		}
 	);
 
+	// Logos
+	for(let i=0; i<8; i++)
+	{
+		// Picture Logo
+		const texture = new THREE.TextureLoader().load(`textures/pictures/prog_languages/${logosName[i]}`);
+		const logoGeometry = new THREE.CircleGeometry(10, 32);
+		const buttonMaterial = new THREE.MeshBasicMaterial({map: texture, transparent: false });
+		logoMesh = new THREE.Mesh(logoGeometry, buttonMaterial);
+		logoMesh.position.set(logosPos[i].x, logosPos[i].y, logosPos[i].z); // put it in front of camera
+		scene.add(logoMesh); 
+		logos.push(logoMesh);
+	}
 }
 
 function init() {
