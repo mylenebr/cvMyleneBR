@@ -118,7 +118,7 @@ function homePageButton()
 
 	// Pink Frame
 	const frameGeometry = new THREE.CircleGeometry(32, 32);
-	const frameMaterial = new THREE.MeshPhongMaterial({ color: lightPink});
+	const frameMaterial = new THREE.MeshPhongMaterial({color: lightPink});
 	frameMesh = new THREE.Mesh(frameGeometry, frameMaterial);
 	frameMesh.position.set(-320, 130, 9.9); // put it in front of camera
 	scene.add(frameMesh);
@@ -186,7 +186,7 @@ function addLogos(){
 	for(let i=0; i<4; i++)
 	{
 		// Picture Logo
-		const texture = new THREE.TextureLoader().load(`textures/pictures/${logosName[i]}`);
+		const texture = new THREE.TextureLoader().load(`textures/pictures/school/${logosName[i]}`);
 		const logoGeometry = new THREE.CircleGeometry(20, 20);
 		const buttonMaterial = new THREE.MeshBasicMaterial({map: texture, transparent: false });
 		logoMesh = new THREE.Mesh(logoGeometry, buttonMaterial);

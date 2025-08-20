@@ -185,7 +185,7 @@ function addLogos(){
 	for(let i=0; i<6; i++)
 	{
 		// Picture Logo
-		const texture = new THREE.TextureLoader().load(`textures/pictures/${logosName[i]}`);
+		const texture = new THREE.TextureLoader().load(`textures/pictures/companies/${logosName[i]}`);
 		const logoGeometry = new THREE.CircleGeometry(20, 20);
 		const buttonMaterial = new THREE.MeshBasicMaterial({map: texture, transparent: false });
 		logoMesh = new THREE.Mesh(logoGeometry, buttonMaterial);
