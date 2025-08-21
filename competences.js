@@ -68,6 +68,21 @@ let flagMesh;
 let flags = [];
 let flagsFrames = [];
 
+// Thread poses
+let sparks = [];
+const threadPos = [
+	new THREE.Vector3(-160, -20, 10), 
+	new THREE.Vector3(0, -50, 10), 
+	new THREE.Vector3(120, 50, 10), 
+	new THREE.Vector3(150, 50, 10), 
+	new THREE.Vector3(180, 20, 10),
+	new THREE.Vector3(150, -20, 10),
+	new THREE.Vector3(180, -60, 10),
+	new THREE.Vector3(190, -80, 10),
+	new THREE.Vector3(180, -100, 10)
+];
+const curve = new THREE.CatmullRomCurve3(threadPos);
+const frames = curve.computeFrenetFrames(100, true);
 
 init();
 
@@ -410,6 +425,28 @@ function addLanguages()
 	}
 }
 
+function sparklethread()
+{
+	const sparkTexture = new THREE.TextureLoader().load('textures/sprites/sparkle.png');
+	const sparkMaterial = new THREE.SpriteMaterial({
+		map: sparkTexture,
+		color: 0x8F8F8F,
+		transparent: true,
+		blending: THREE.AdditiveBlending,
+		depthWrite: false 
+	});
+
+	for (let i = 0; i < 2000; i++) {
+		const sprite = new THREE.Sprite(sparkMaterial.clone());
+		sprite.scale.set(1, 1, 1);
+		scene.add(sprite);
+		sparks.push({
+			sprite,
+			offset: Math.random() // random start along curve
+		});
+	}
+}
+
 function init() {
 
 	// Renderer
@@ -449,6 +486,9 @@ function init() {
 
 	// Spoken Languages
 	addLanguages();
+
+	// Thread
+	sparklethread(); 
 
 	// Raycaster setup
 	raycaster = new THREE.Raycaster();
@@ -494,6 +534,29 @@ function animLogos(now){
 	});
 }
 
+function animThreadSparkles(time){
+	sparks.forEach(s => {
+		const t = (time * 0.05 + s.offset) % 1; // move forward
+
+		// Base position on curve
+		const pos = curve.getPointAt(t);
+
+		// Find local frame
+		const l = Math.floor(t * frames.tangents.length); 
+		const normal = frames.normals[l];
+		const binormal = frames.binormals[l];
+		
+		const offset = normal.clone().add(binormal.clone());
+
+		s.sprite.position.copy(pos.clone().add(offset));
+		s.sprite.position.add(new THREE.Vector3(
+			(Math.random() - 0.5) * 2,
+			(Math.random() - 0.5) * 2,
+			(Math.random() - 0.5) * 2
+		));
+	});
+}
+
 function animate() {
     requestAnimationFrame(animate);
   	renderer.render(scene, camera);
@@ -501,5 +564,7 @@ function animate() {
 	const now = performance.now();
 
 	//animLogos(now);
+
+	animThreadSparkles(now*0.0005);
 }
 renderer.setAnimationLoop( animate );
