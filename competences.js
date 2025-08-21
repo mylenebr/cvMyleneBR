@@ -9,6 +9,7 @@ let camera, scene, renderer, controls, raycaster, mouse;
 // Colors
 let lightPink = 0xFFE3F0;
 let darkPink = 0x5C1F36;
+let black = 0x000000;
 let backgroundPink = 0x614850; //0xC7B1BD;
 
 // Header
@@ -19,10 +20,10 @@ const logosName = [
 	"cpp.jpg", "python.png", "java.jpg", "js.png", "c.png", "html.webp",
 	"caml.jpg", "php.png"
 ];
-const xLogos = -330;
+const xLogos = -325;
 const yLogos = [
 	30, 6, -18, -43, -66, -90, -114, -138
-]; // 40
+];
 const logosPos = [
 	new THREE.Vector3(xLogos, yLogos[0], 10), 
 	new THREE.Vector3(xLogos, yLogos[1], 10), 
@@ -33,7 +34,6 @@ const logosPos = [
 	new THREE.Vector3(xLogos, yLogos[6], 10), 
 	new THREE.Vector3(xLogos, yLogos[7], 10), 
 ];
-let logos = [];
 let logoMesh;
 
 // Prog Stars
@@ -50,6 +50,23 @@ const starsPos = [
 	new THREE.Vector3(xStars[0], yLogos[6], 10), new THREE.Vector3(xStars[1], yLogos[6], 10),// caml
 	new THREE.Vector3(xStars[0], yLogos[7], 10),// php
 ];
+
+// Flags
+const flagsName = [
+	"fr.jpg", "gb.png", "it.jpg"
+];
+const xFlags = 175;
+const yFlags = [
+	10, -50, -110
+];
+const flagsPos = [
+	new THREE.Vector3(xFlags, yFlags[0], 10), 
+	new THREE.Vector3(xFlags, yFlags[1], 10), 
+	new THREE.Vector3(xFlags, yFlags[2], 10),
+];
+let flagMesh;
+let flags = [];
+let flagsFrames = [];
 
 
 init();
@@ -181,7 +198,7 @@ function addProgLang()
 			//const textMat = new THREE.MeshBasicMaterial({ color: 0xffffff });
 			const textMat = new THREE.MeshPhongMaterial({ color: lightPink});
 			textMesh = new THREE.Mesh(textGeo, textMat);
-			textMesh.position.set(-250, 50, 10);
+			textMesh.position.set(-250, 55, 10);
 
 			// Attach text to star so it moves/rotates with it
 			scene.add(textMesh);
@@ -206,13 +223,190 @@ function addProgLang()
 		logoMesh = new THREE.Mesh(logoGeometry, buttonMaterial);
 		logoMesh.position.set(logosPos[i].x, logosPos[i].y, logosPos[i].z); // put it in front of camera
 		scene.add(logoMesh); 
-		logos.push(logoMesh);
 	}
 
 	// Stars
 	for(let i=0; i<22; i++)
 	{
 		createStar(starsPos[i]);
+	}
+}
+
+function addQualities()
+{
+	// Frame
+	const shape = createRoundedRectShape(200, 230, 10);
+	const geometry = new THREE.ShapeGeometry(shape);
+	const material = new THREE.MeshStandardMaterial({ color: darkPink, side: THREE.DoubleSide });
+	const roundedPlaneMesh = new THREE.Mesh(geometry, material);
+	roundedPlaneMesh.position.set(0, -40, 9.9);
+	scene.add(roundedPlaneMesh);
+
+	// Title
+	const loaderHeader = new FontLoader();
+	loaderHeader.load(
+		'fonts/optimer_bold.typeface.json',
+		function (font) {
+			const textGeo = new TextGeometry("QUALITES", {
+				font: font,
+				size: 8,
+				depth: 1,
+				height: 0,
+				curveSegments: 8
+			});
+			textGeo.center();
+			
+			//const textMat = new THREE.MeshBasicMaterial({ color: 0xffffff });
+			const textMat = new THREE.MeshPhongMaterial({ color: lightPink});
+			textMesh = new THREE.Mesh(textGeo, textMat);
+			textMesh.position.set(0, 55, 10);
+
+			// Attach text to star so it moves/rotates with it
+			scene.add(textMesh);
+		},
+		// onProgress callback
+		function ( xhr ) {
+			console.log( (xhr.loaded / xhr.total * 100) + '% loaded' );
+		},
+		// onError callback
+		function ( err ) {
+			console.log( 'An error happened' );
+		}
+	);
+
+	// Text
+	const qualityPres = "Travailleuse, organisee, aime le travail d'equipe, etc.";
+	const loaderText = new FontLoader();
+	loaderText.load(
+		'fonts/optimer_regular.typeface.json',
+		function (font) {
+			const textGeo = new TextGeometry(qualityPres, {
+				font: font,
+				size: 4,
+				depth: 1,
+				height: 0,
+				curveSegments: 8
+			});
+			textGeo.center();
+			
+			//const textMat = new THREE.MeshBasicMaterial({ color: 0xffffff });
+			const textMat = new THREE.MeshPhongMaterial({ color: lightPink});
+			textMesh = new THREE.Mesh(textGeo, textMat);
+			textMesh.position.set(0, -50, 10);
+
+			// Attach text to star so it moves/rotates with it
+			scene.add(textMesh);
+		},
+		// onProgress callback
+		function ( xhr ) {
+			console.log( (xhr.loaded / xhr.total * 100) + '% loaded' );
+		},
+		// onError callback
+		function ( err ) {
+			console.log( 'An error happened' );
+		}
+	);
+}
+
+function addLanguages()
+{
+	// Frames
+	for(let i=0; i<3; i++){
+		const shape = createRoundedRectShape(170, 30, 10);
+		const geometry = new THREE.ShapeGeometry(shape);
+		const material = new THREE.MeshStandardMaterial({ color: darkPink, side: THREE.DoubleSide });
+		const roundedPlaneMesh = new THREE.Mesh(geometry, material);
+		roundedPlaneMesh.position.set(250, yFlags[i], 9.9);
+		scene.add(roundedPlaneMesh);
+	}
+
+	// Title
+	const loaderHeader = new FontLoader();
+	loaderHeader.load(
+		'fonts/optimer_bold.typeface.json',
+		function (font) {
+			const textGeo = new TextGeometry("LANGUES", {
+				font: font,
+				size: 8,
+				depth: 1,
+				height: 0,
+				curveSegments: 8
+			});
+			textGeo.center();
+			
+			//const textMat = new THREE.MeshBasicMaterial({ color: 0xffffff });
+			const textMat = new THREE.MeshPhongMaterial({ color: lightPink});
+			textMesh = new THREE.Mesh(textGeo, textMat);
+			textMesh.position.set(250, 55, 10);
+
+			// Attach text to star so it moves/rotates with it
+			scene.add(textMesh);
+		},
+		// onProgress callback
+		function ( xhr ) {
+			console.log( (xhr.loaded / xhr.total * 100) + '% loaded' );
+		},
+		// onError callback
+		function ( err ) {
+			console.log( 'An error happened' );
+		}
+	);
+
+	// Flags
+	for(let i=0; i<3; i++)
+	{
+		// Picture Flags
+		const texture = new THREE.TextureLoader().load(`textures/pictures/flags/${flagsName[i]}`);
+		const flagGeometry = new THREE.CircleGeometry(20, 32);
+		const buttonMaterial = new THREE.MeshBasicMaterial({map: texture, transparent: false });
+		flagMesh = new THREE.Mesh(flagGeometry, buttonMaterial);
+		flagMesh.position.set(flagsPos[i].x, flagsPos[i].y, flagsPos[i].z); // put it in front of camera
+		scene.add(flagMesh); 
+		flags.push(flagMesh);
+
+		// Frame
+		const frameGeometry = new THREE.CircleGeometry(22, 32);
+		const frameMaterial = new THREE.MeshPhongMaterial({color: darkPink});
+		frameMesh = new THREE.Mesh(frameGeometry, frameMaterial);
+		frameMesh.position.set(flagsPos[i].x, flagsPos[i].y, flagsPos[i].z-0.1); // put it in front of camera
+		scene.add(frameMesh);
+		flagsFrames.push(frameMesh);
+	}
+
+	// Text
+	const spokenLang = ["Natif", "Avancé (C1: 960 points au TOEIC)", "Débutant (A2)"];
+	for(let i=0; i<3; i++)
+	{
+		const loaderText = new FontLoader();
+		loaderText.load(
+			'fonts/optimer_regular.typeface.json',
+			function (font) {
+				const textGeo = new TextGeometry(spokenLang[i], {
+					font: font,
+					size: 4,
+					depth: 1,
+					height: 0,
+					curveSegments: 8
+				});
+				textGeo.center();
+				
+				//const textMat = new THREE.MeshBasicMaterial({ color: 0xffffff });
+				const textMat = new THREE.MeshPhongMaterial({ color: lightPink});
+				textMesh = new THREE.Mesh(textGeo, textMat);
+				textMesh.position.set(250, yFlags[i], 10);
+
+				// Attach text to star so it moves/rotates with it
+				scene.add(textMesh);
+			},
+			// onProgress callback
+			function ( xhr ) {
+				console.log( (xhr.loaded / xhr.total * 100) + '% loaded' );
+			},
+			// onError callback
+			function ( err ) {
+				console.log( 'An error happened' );
+			}
+		);
 	}
 }
 
@@ -250,6 +444,11 @@ function init() {
 	// Prog Lang
 	addProgLang();
 
+	// Qualities
+	addQualities();
+
+	// Spoken Languages
+	addLanguages();
 
 	// Raycaster setup
 	raycaster = new THREE.Raycaster();
@@ -271,8 +470,36 @@ function onClick(event) {
     }
 }
 
+function animLogos(now){
+	flags.forEach(flag => {
+		const seconds = Math.floor(now / 1000);
+		const y = (seconds % 2) ? 0.001 : -0.001;
+
+		flag.position.add(new THREE.Vector3(
+			0,
+			y,
+			0
+		));
+	});
+
+	flagsFrames.forEach(flagFrame => {
+		const seconds = Math.floor(now / 1000);
+		const y = (seconds % 2) ? 0.001 : -0.001;
+
+		flagFrame.position.add(new THREE.Vector3(
+			0,
+			y,
+			0
+		));
+	});
+}
+
 function animate() {
     requestAnimationFrame(animate);
   	renderer.render(scene, camera);
+
+	const now = performance.now();
+
+	//animLogos(now);
 }
 renderer.setAnimationLoop( animate );
