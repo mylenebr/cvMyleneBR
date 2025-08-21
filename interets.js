@@ -14,6 +14,20 @@ let backgroundPink = 0x614850; //0xC7B1BD;
 // Header
 let textMesh, buttonMesh, frameMesh;
 
+
+// Thread poses
+let sparks = [];
+const threadPos = [
+	new THREE.Vector3(-160, -90, 10), 
+	new THREE.Vector3(-40, 20, 10), 
+	new THREE.Vector3(-30, -100, 10), 
+	new THREE.Vector3(120, -170, 10), 
+	new THREE.Vector3(150, 60, 10),
+	new THREE.Vector3(250, -20, 10)
+];
+const curve = new THREE.CatmullRomCurve3(threadPos);
+const frames = curve.computeFrenetFrames(100, true);
+
 init();
 
 // Util
@@ -216,6 +230,28 @@ function addSpanish()
 	addText(spainText, 7, 1, 0, 8, lightPink, new THREE.Vector3(250, -60, 10));
 }
 
+function sparklethread()
+{
+	const sparkTexture = new THREE.TextureLoader().load('textures/sprites/sparkle.png');
+	const sparkMaterial = new THREE.SpriteMaterial({
+		map: sparkTexture,
+		color: 0x8F8F8F,
+		transparent: true,
+		blending: THREE.AdditiveBlending,
+		depthWrite: false 
+	});
+
+	for (let i = 0; i < 2000; i++) {
+		const sprite = new THREE.Sprite(sparkMaterial.clone());
+		sprite.scale.set(1, 1, 1);
+		scene.add(sprite);
+		sparks.push({
+			sprite,
+			offset: Math.random() // random start along curve
+		});
+	}
+}
+
 function init() {
 
 	// Renderer
@@ -258,7 +294,8 @@ function init() {
 
 	// Spanish
 	addSpanish();
-
+	
+	sparklethread();
 	// Raycaster setup
 	raycaster = new THREE.Raycaster();
 	mouse = new THREE.Vector2();
@@ -279,9 +316,35 @@ function onClick(event) {
     }
 }
 
+function animThreadSparkles(time){
+	sparks.forEach(s => {
+		const t = (time * 0.05 + s.offset) % 1; // move forward
+
+		// Base position on curve
+		const pos = curve.getPointAt(t);
+
+		// Find local frame
+		const l = Math.floor(t * frames.tangents.length); 
+		const normal = frames.normals[l];
+		const binormal = frames.binormals[l];
+		
+		const offset = normal.clone().add(binormal.clone());
+
+		s.sprite.position.copy(pos.clone().add(offset));
+		s.sprite.position.add(new THREE.Vector3(
+			(Math.random() - 0.5) * 2,
+			(Math.random() - 0.5) * 2,
+			(Math.random() - 0.5) * 2
+		));
+	});
+}
+
 function animate() {
     requestAnimationFrame(animate);
 	controls.update();
+
+	const now = performance.now();
+	animThreadSparkles(now*0.005);
 
   	renderer.render(scene, camera);
 }
