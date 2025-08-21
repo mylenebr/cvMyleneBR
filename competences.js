@@ -74,6 +74,15 @@ const threadPos = [
 	new THREE.Vector3(-160, -20, 10), 
 	new THREE.Vector3(0, -50, 10), 
 	new THREE.Vector3(120, 50, 10), 
+	// Start star
+	/*new THREE.Vector3(200, 130, 10), 
+	new THREE.Vector3(270, 132, 10), 
+	new THREE.Vector3(200, 82, 10), 
+	new THREE.Vector3(230, 180, 10), 
+	new THREE.Vector3(260, 82, 10), 
+	new THREE.Vector3(180, 115, 10), 
+	new THREE.Vector3(170, 50, 10), */
+	// End star
 	new THREE.Vector3(150, 50, 10), 
 	new THREE.Vector3(180, 20, 10),
 	new THREE.Vector3(150, -20, 10),
@@ -559,12 +568,13 @@ function animThreadSparkles(time){
 
 function animate() {
     requestAnimationFrame(animate);
-  	renderer.render(scene, camera);
+	controls.update();
 
 	const now = performance.now();
 
 	//animLogos(now);
 
 	animThreadSparkles(now*0.0005);
+  	renderer.render(scene, camera);
 }
 renderer.setAnimationLoop( animate );
