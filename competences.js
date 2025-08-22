@@ -299,14 +299,14 @@ function addQualities()
 	);
 
 	// Text
-	const qualityPres = "Travailleuse, organisee, aime le travail d'equipe, etc.";
+	const qualityPres = "Je suis une personne \ntravailleuse, appliquée \net organisee. \nJ'ai egalement un fort \nsens de l'analyse \net un gout prononce pour \nles travails en equipes.";
 	const loaderText = new FontLoader();
 	loaderText.load(
 		'fonts/optimer_regular.typeface.json',
 		function (font) {
 			const textGeo = new TextGeometry(qualityPres, {
 				font: font,
-				size: 4,
+				size: 10,
 				depth: 1,
 				height: 0,
 				curveSegments: 8

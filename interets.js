@@ -54,7 +54,7 @@ function addText(text, size, depth, height, curveSegments,
 {
 	const loaderHeader = new FontLoader();
 	loaderHeader.load(
-		'fonts/optimer_bold.typeface.json',
+		'fonts/optimer_regular.typeface.json',
 		function (font) {
 			const textGeo = new TextGeometry(text, {
 				font: font,
