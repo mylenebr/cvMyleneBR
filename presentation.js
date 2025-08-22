@@ -14,6 +14,72 @@ let backgroundPink = 0x614850; //0xC7B1BD;
 // Header
 let textMesh, buttonMesh, frameMesh;
 
+// Thread poses
+let sparks = [];
+const leftX = -265;
+const smallRange = 10;
+const upY = 70;
+const longRange = 30;
+const downY = -170; //170?
+const rightX = 265;
+const threadPos = [
+	new THREE.Vector3(leftX, upY, 10), // Left
+	new THREE.Vector3(leftX-smallRange, upY-longRange, 10), 
+	new THREE.Vector3(leftX, upY-longRange*2, 10), 
+	new THREE.Vector3(leftX-smallRange, upY-longRange*3, 10), 
+	new THREE.Vector3(leftX, upY-longRange*4, 10),
+	new THREE.Vector3(leftX-smallRange, upY-longRange*5, 10), 
+	new THREE.Vector3(leftX, upY-longRange*6, 10), 
+	new THREE.Vector3(leftX-smallRange, upY-longRange*7, 10), 
+	new THREE.Vector3(leftX, upY-longRange*8-5, 10),
+	new THREE.Vector3(leftX+longRange, downY, 10), // Down
+	new THREE.Vector3(leftX+longRange*2, downY-smallRange, 10),
+	new THREE.Vector3(leftX+longRange*3, downY, 10),
+	new THREE.Vector3(leftX+longRange*4, downY-smallRange, 10),
+	new THREE.Vector3(leftX+longRange*5, downY, 10),
+	new THREE.Vector3(leftX+longRange*6, downY-smallRange, 10),
+	new THREE.Vector3(leftX+longRange*7, downY, 10),
+	new THREE.Vector3(leftX+longRange*8, downY-smallRange, 10),
+	new THREE.Vector3(leftX+longRange*9, downY, 10),
+	new THREE.Vector3(leftX+longRange*10, downY-smallRange, 10),
+	new THREE.Vector3(leftX+longRange*11, downY, 10),
+	new THREE.Vector3(leftX+longRange*12, downY-smallRange, 10),
+	new THREE.Vector3(leftX+longRange*13, downY, 10),
+	new THREE.Vector3(leftX+longRange*14, downY-smallRange, 10),
+	new THREE.Vector3(leftX+longRange*15, downY, 10),
+	new THREE.Vector3(leftX+longRange*16, downY-smallRange, 10),
+	new THREE.Vector3(leftX+longRange*17, downY, 10),
+	new THREE.Vector3(leftX+longRange*18-10, downY-smallRange, 10),
+	new THREE.Vector3(rightX+smallRange, downY+longRange, 10),// Right
+	new THREE.Vector3(rightX, downY+longRange*2, 10),
+	new THREE.Vector3(rightX+smallRange, downY+longRange*3, 10),
+	new THREE.Vector3(rightX, downY+longRange*4, 10),
+	new THREE.Vector3(rightX+smallRange, downY+longRange*5, 10),
+	new THREE.Vector3(rightX, downY+longRange*6, 10),
+	new THREE.Vector3(rightX+smallRange, downY+longRange*7, 10),
+	new THREE.Vector3(rightX, downY+longRange*8, 10),
+	new THREE.Vector3(rightX-longRange, upY, 10), // Up
+	new THREE.Vector3(rightX-longRange*2, upY+smallRange, 10),
+	new THREE.Vector3(rightX-longRange*3, upY, 10),
+	new THREE.Vector3(rightX-longRange*4, upY+smallRange, 10),
+	new THREE.Vector3(rightX-longRange*5, upY, 10),
+	new THREE.Vector3(rightX-longRange*6, upY+smallRange, 10),
+	new THREE.Vector3(rightX-longRange*7, upY, 10),
+	new THREE.Vector3(rightX-longRange*8, upY+smallRange, 10),
+	new THREE.Vector3(rightX-longRange*9, upY, 10),
+	new THREE.Vector3(rightX-longRange*10, upY+smallRange, 10),
+	new THREE.Vector3(rightX-longRange*11, upY, 10),
+	new THREE.Vector3(rightX-longRange*12, upY+smallRange, 10),
+	new THREE.Vector3(rightX-longRange*13, upY, 10),
+	new THREE.Vector3(rightX-longRange*14, upY+smallRange, 10),
+	new THREE.Vector3(rightX-longRange*15, upY, 10),
+	new THREE.Vector3(rightX-longRange*16, upY+smallRange, 10),
+	new THREE.Vector3(rightX-longRange*17, upY, 10),
+	new THREE.Vector3(leftX, upY, 10)
+];
+const curve = new THREE.CatmullRomCurve3(threadPos);
+const frames = curve.computeFrenetFrames(100, true);
+
 init();
 
 // Util
@@ -183,6 +249,28 @@ function addPictures()
 	scene.add(canadaMesh); 
 }
 
+function sparklethread()
+{
+	const sparkTexture = new THREE.TextureLoader().load('textures/sprites/sparkle.png');
+	const sparkMaterial = new THREE.SpriteMaterial({
+		map: sparkTexture,
+		color: 0x8F8F8F,
+		transparent: true,
+		blending: THREE.AdditiveBlending,
+		depthWrite: false 
+	});
+
+	for (let i = 0; i < 2000; i++) {
+		const sprite = new THREE.Sprite(sparkMaterial.clone());
+		sprite.scale.set(1, 1, 1);
+		scene.add(sprite);
+		sparks.push({
+			sprite,
+			offset: Math.random() // random start along curve
+		});
+	}
+}
+
 function init() {
 
 	// Renderer
@@ -220,7 +308,8 @@ function init() {
 	// Pictures
 	addPictures();
 
-	// THread (wawe around the rect)
+	// Thread (wave around the rect)
+	sparklethread();
 
 	// Raycaster setup
 	raycaster = new THREE.Raycaster();
@@ -242,8 +331,36 @@ function onClick(event) {
     }
 }
 
+function animThreadSparkles(time){
+	sparks.forEach(s => {
+		const t = (time * 0.05 + s.offset) % 1; // move forward
+
+		// Base position on curve
+		const pos = curve.getPointAt(t);
+
+		// Find local frame
+		const l = Math.floor(t * frames.tangents.length); 
+		const normal = frames.normals[l];
+		const binormal = frames.binormals[l];
+		
+		const offset = normal.clone().add(binormal.clone());
+
+		s.sprite.position.copy(pos.clone().add(offset));
+		s.sprite.position.add(new THREE.Vector3(
+			(Math.random() - 0.5) * 2,
+			(Math.random() - 0.5) * 2,
+			(Math.random() - 0.5) * 2
+		));
+	});
+}
+
 function animate() {
     requestAnimationFrame(animate);
+	controls.update();
+
+	const now = performance.now();
+	animThreadSparkles(now*0.005);
+
   	renderer.render(scene, camera);
 }
 renderer.setAnimationLoop( animate );

@@ -14,7 +14,6 @@ let backgroundPink = 0x614850; //0xC7B1BD;
 // Header
 let textMesh, buttonMesh, frameMesh;
 
-
 // Thread poses
 let sparks = [];
 const threadPos = [
