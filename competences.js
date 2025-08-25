@@ -271,7 +271,7 @@ function addQualities()
 	loaderHeader.load(
 		'fonts/optimer_bold.typeface.json',
 		function (font) {
-			const textGeo = new TextGeometry("QUALITES", {
+			const textGeo = new TextGeometry("QUALITÉS", {
 				font: font,
 				size: 8,
 				depth: 1,
@@ -299,7 +299,13 @@ function addQualities()
 	);
 
 	// Text
-	const qualityPres = "Je suis une personne \ntravailleuse, appliquée \net organisee. \nJ'ai egalement un fort \nsens de l'analyse \net un gout prononce pour \nles travails en equipes.";
+	const qualityPres = "Je suis une personne \n"
+					+ "travailleuse, appliquée \n"
+					+ "et organisée. \n \n"
+					+ "J'ai également un fort \n"
+					+ "sens de l'analyse et \n" 
+					+ "un goût prononcé pour \n"
+					+ "les travaux en équipes.";
 	const loaderText = new FontLoader();
 	loaderText.load(
 		'fonts/optimer_regular.typeface.json',
@@ -399,6 +405,7 @@ function addLanguages()
 
 	// Text
 	const spokenLang = ["Natif", "Avancé (C1: 960 points au TOEIC)", "Débutant (A2)"];
+	const xLang = [250, 260, 250];
 	for(let i=0; i<3; i++)
 	{
 		const loaderText = new FontLoader();
@@ -407,7 +414,7 @@ function addLanguages()
 			function (font) {
 				const textGeo = new TextGeometry(spokenLang[i], {
 					font: font,
-					size: 4,
+					size: 6,
 					depth: 1,
 					height: 0,
 					curveSegments: 8
@@ -417,7 +424,7 @@ function addLanguages()
 				//const textMat = new THREE.MeshBasicMaterial({ color: 0xffffff });
 				const textMat = new THREE.MeshPhongMaterial({ color: lightPink});
 				textMesh = new THREE.Mesh(textGeo, textMat);
-				textMesh.position.set(250, yFlags[i], 10);
+				textMesh.position.set(xLang[i], yFlags[i], 10);
 
 				// Attach text to star so it moves/rotates with it
 				scene.add(textMesh);
