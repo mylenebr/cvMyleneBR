@@ -156,8 +156,15 @@ function addMusic()
 	scene.add(logoMesh); 
 
 	// Text
-	const musicText = "La majorité de mon temps libre \nest consacrée à la musique : \nchant, guitare, piano, \ncomposition, production, etc. \nJouer avec des amis ou seule, \nsur scène ou dans ma chambre, \ntout ce qui y est attrait \nme fais vibrer.";
-	addText(musicText, 8, 1, 0, 8, lightPink, new THREE.Vector3(-250, -60, 10));
+	const musicText = "La majorité de mon temps libre \n"
+				+ "est consacré à la musique : \n"
+				+ "chant, guitare, piano, \n"
+				+ "composition, production, etc. \n"
+				+ "Jouer avec des amis ou seule, \n"
+				+ "sur scène ou dans ma chambre, \n"
+				+ "tout ce qui y est attrait \n"
+				+ "me fais vibrer.";
+	addText(musicText, 8, 1, 0, 8, lightPink, new THREE.Vector3(-250, -65, 10));
 }
 
 function addBooks()
@@ -179,8 +186,12 @@ function addBooks()
 	scene.add(logoMesh); 
 
 	// Text
-	const musicText = "Un autres de mes passe temps \nfavoris est la lecture, un temps \nd'attente ? J'ai toujours un \nlivre dans mon sac a sortir \npour le remplir !";
-	addText(musicText, 7, 1, 0, 8, lightPink, new THREE.Vector3(-10, -12, 10));
+	const booksText = "Un autre de mes passe-temps \n"
+				+ "favoris est la lecture, un temps \n"
+				+ "d'attente ? J'ai toujours un \n"
+				+ "livre dans mon sac à sortir \n" 
+				+ "pour le combler !";
+	addText(booksText, 7, 1, 0, 8, lightPink, new THREE.Vector3(-10, -12, 10));
 }
 
 function addAsso()
@@ -202,7 +213,12 @@ function addAsso()
 	scene.add(logoMesh); 
 
 	// Text
-	const musicText = "J'aime egalement m'impliquer dans la vie \nassociative. En ecole d'ingenieur j'etais \npresidente de plusieurs assos/club. \nEt tout au long de mes etudes j'ai \nparticipe dans plusieurs clubs \nsportifs et de musique.";
+	const musicText = "J'aime également m'impliquer dans la vie \n"
+				+ "associative. En école d'ingénieur j'étais \n" 
+				+ "présidente de plusieurs assos/clubs. \n"
+				+ "Et tout au long de mes études j'ai \n"
+				+ "participé à plusieurs clubs \n"
+				+ "sportifs et musicaux.";
 	addText(musicText, 6, 1, 0, 8, lightPink, new THREE.Vector3(-10, -112, 10));
 }
 
@@ -225,7 +241,17 @@ function addSpanish()
 	scene.add(logoMesh); 
 
 	// Text
-	const spainText = "Puisque que j'aime toujours \napprendre, j'ai récement décidé \nd'étudier l'espagnol. J'ai choisis \ncette langue pour deux raisons \nmajeurs: c'est une langue parlée \ndans beaucoup de pays (que j'aimerais \nvisiter un jour), et la culture\nhispanique m'intéresse de plus en plus, \nen particulier (vous l'aurez peut-etre \ndevine) la musique \nhispanophone !";
+	const spainText = "Puisque j'aime toujours \n"
+				+ "apprendre, j'ai récemment décidé \n"
+				+ "d'étudier l'espagnol. J'ai choisi \n"
+				+ "cette langue pour deux raisons \n"
+				+ "majeures : c'est une langue parlée \n"
+				+ "dans beaucoup de pays (que j'aimerais \n"
+				+ "visiter un jour), et la culture\n"
+				+ "hispanique m'intéresse de plus en plus, \n"
+				+ "en particulier (vous l'aurez peut-être \n"
+				+ "deviné) la musique \n"
+				+ "hispanophone !";
 	addText(spainText, 7, 1, 0, 8, lightPink, new THREE.Vector3(250, -60, 10));
 }
 
