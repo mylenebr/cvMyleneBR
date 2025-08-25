@@ -12,6 +12,7 @@ let sparks = [];
 let nameSparks = [];
 let nameSparkRandIdx = [];
 const materials = []; //SF
+const clock = new THREE.Clock();
 
 // Header
 let textMesh, textPositions, originalPositions, buttonMesh, frameMesh;
@@ -609,9 +610,9 @@ function spinHoveredStar(now){
 	stars.forEach(star => {
 		if (star.userData.spinning) { 
 			// Spin slowly around Y axis
-			star.rotation.y += 0.05;
+			star.rotation.y += 0.2;
 
-			(Math.cos(star.rotation.y)>0) ? star.position.y += 0.005 : star.position.y -= 0.005;
+			(Math.cos(star.rotation.y)>0) ? star.position.y += 0.5 : star.position.y -= 0.5;
 
 			// Stop when target reached
 			if (star.rotation.y >= star.userData.targetRotation) {
@@ -644,11 +645,10 @@ function clickStar(now)
 function animate() {
 	controls.update();
 
-	const now = performance.now();
-	const time = now * 0.0005;
+	const now = clock.getDelta();
 
 	// Animate Name title
-	animNameTitle(now);
+	//animNameTitle(now);
 
 	// Animate name sparkles
 	/*if (textMesh)
@@ -661,25 +661,24 @@ function animate() {
 
 	// Animate thread sparkles
 	//const time = now * 0.0005;
-	animThreadSparkles(time);
+	animThreadSparkles(now);
 
 	// Spin hovered star
 	spinHoveredStar(now);
 
 	// Click star 
-	clickStar(now);
+	clickStar(performance.now());
 
 	render();
 }
 
-const clock = new THREE.Clock();
 function render() {
 	const delta = clock.getDelta()*0.5; // seconds since last frame
 	
 	for (let i = 0; i < scene.children.length; i ++) {
 		const object = scene.children[i];
 		if (object instanceof THREE.Points) {
-            const speed = (i < 2 ? i + 1 : -(i + 1)) * 0.1;
+            const speed = (i < 2 ? i + 1 : -(i + 1)) * 0.4;
             object.rotation.y += speed * delta;
 		}
 	}
