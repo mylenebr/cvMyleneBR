@@ -403,6 +403,7 @@ function init() {
 	window.addEventListener('mousemove', onMouseMove);
 	window.addEventListener('click', onClick);
 	window.addEventListener('resize', onWindowResize);
+	window.addEventListener('pageshow', onPageShow);
 }
 
 function onMouseMove(event) {
@@ -452,6 +453,13 @@ function onWindowResize() {
 	camera.aspect = window.innerWidth / window.innerHeight;
 	camera.updateProjectionMatrix();
 	renderer.setSize(window.innerWidth, window.innerHeight);
+}
+
+function onPageShow(event){
+	if (event.persisted) {
+		camera.position.set(0, 0, 500);
+		camera.lookAt(0, 0, 0);
+	}
 }
 
 function easeInOutCubic(t) {
