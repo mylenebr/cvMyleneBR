@@ -128,7 +128,7 @@ function sparklethread()
 	const sparkTexture = new THREE.TextureLoader().load('textures/sprites/sparkle.png');
 	const sparkMaterial = new THREE.SpriteMaterial({
 		map: sparkTexture,
-		color: 0x8F8F8F,
+		color: 0xffffaa,
 		transparent: true,
 		blending: THREE.AdditiveBlending,
 		depthWrite: false 
