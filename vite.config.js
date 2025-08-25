@@ -4,7 +4,7 @@ import { resolve } from 'path';
  * @type {import('vite').UserConfig}
  */
 export default {
-    base: process.env.NODE_ENV === 'production' ? '/cv_3d/' : '',
+    base: process.env.NODE_ENV === 'production' ? '/cvMyleneBR/' : '',
     build: {
         rollupOptions: {
         input: {
