@@ -62,8 +62,7 @@ function title()
 			});
 			textGeo.center();
 			
-			//const textMat = new THREE.MeshBasicMaterial({ color: 0xffffff });
-			const textMat = new THREE.MeshPhongMaterial({ color:lightPink});
+			const textMat = new THREE.MeshPhongMaterial({color:lightPink});
 			textMesh = new THREE.Mesh(textGeo, textMat);
 			textMesh.position.set(0, 100, 10);
 
@@ -115,7 +114,7 @@ function homePageButton()
 
 	// Pink Frame
 	const frameGeometry = new THREE.CircleGeometry(32, 32);
-	const frameMaterial = new THREE.MeshPhongMaterial({ color: lightPink});
+	const frameMaterial = new THREE.MeshPhongMaterial({color: darkPink});
 	frameMesh = new THREE.Mesh(frameGeometry, frameMaterial);
 	frameMesh.position.set(-320, 130, 9.9); // put it in front of camera
 	scene.add(frameMesh);
@@ -255,6 +254,13 @@ function addContact()
 	cvMesh = new THREE.Mesh(buttonGeometry, buttonMaterial);
 	cvMesh.position.set(-95, -165, 10); // put it in front of camera
 	scene.add(cvMesh);
+	
+	// Pink Frame
+	const frameGeometry = new THREE.CircleGeometry(17, 32);
+	const frameMaterial = new THREE.MeshPhongMaterial({color: darkPink});
+	frameMesh = new THREE.Mesh(frameGeometry, frameMaterial);
+	frameMesh.position.set(-95, -165, 9.9); // put it in front of camera
+	scene.add(frameMesh);
 
 	// Mail
 	const loaderHeader = new FontLoader();

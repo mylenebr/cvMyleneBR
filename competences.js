@@ -189,7 +189,7 @@ function homePageButton()
 
 	// Pink Frame
 	const frameGeometry = new THREE.CircleGeometry(32, 32);
-	const frameMaterial = new THREE.MeshPhongMaterial({ color: lightPink});
+	const frameMaterial = new THREE.MeshPhongMaterial({color: darkPink});
 	frameMesh = new THREE.Mesh(frameGeometry, frameMaterial);
 	frameMesh.position.set(-320, 130, 9.9); // put it in front of camera
 	scene.add(frameMesh);
