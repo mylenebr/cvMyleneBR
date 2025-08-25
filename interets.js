@@ -122,7 +122,7 @@ function title()
 function homePageButton()
 {
 	// Picture Button
-	const texture = new THREE.TextureLoader().load("textures/pictures/cv_picture.jpeg");
+	const texture = new THREE.TextureLoader().load("textures/pictures/cv_picture_house.jpg");
 	const buttonGeometry = new THREE.CircleGeometry(30, 32);
 	const buttonMaterial = new THREE.MeshBasicMaterial({map: texture, transparent: false });
 	buttonMesh = new THREE.Mesh(buttonGeometry, buttonMaterial);
