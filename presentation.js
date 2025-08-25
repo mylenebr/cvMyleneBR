@@ -174,7 +174,7 @@ function addIntro()
 				+ "pipeline, j’ai découvert une véritable passion pour ce domaine et le désir d’aller plus loin.\n"
 				+ "J’ai ainsi proposé à mon superviseur d’effectuer mon stage de fin d’études dans l’équipe de  Recherche & Développement,\n"
 				+ "afin de poursuivre mon apprentissage de la 3D tout en mettant à profit ma formation en mathématiques et en physique.\n \n"
-				+ "à l’issue de ce stage, j’ai obtenu mes deux diplômes : Ingénieur en informatique et réseaux (ENSISA, France),\n"
+				+ "à l’issue de ce stage, j’ai obtenu mes deux diplômes : Ingénieure en informatique et réseaux (ENSISA, France),\n"
 				+ "et une Maîtrise en informatique (UQAC, Canada).\n"
 				+ "Sentant que mon aventure au Québec n’était pas terminée, j’ai choisi d’y rester un an et demi de plus,\n"
 				+ "toujours dans l’équipe R&D de Pitch Black.\n \n"
@@ -182,7 +182,7 @@ function addIntro()
 				+ "domaine, afin de continuer à apprendre, à progresser et à relever de nouveaux défis.\n \n"
 				+ "Je vous invite à consulter mon CV en ligne pour en savoir davantage sur mon parcours, mes compétences et mes passions.\n"
 				+ "Je serai ravie d’échanger avec vous, alors n’hésitez pas à me contacter !\n"
-				+ "\n Mylene";
+				+ "\n Mylène";
 
 	const loaderHeader = new FontLoader();
 	loaderHeader.load(
