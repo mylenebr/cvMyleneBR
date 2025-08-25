@@ -40,6 +40,8 @@ const starPoses = [
 const curve = new THREE.CatmullRomCurve3(starPoses);
 const frames = curve.computeFrenetFrames(100, true); // precompute 100 segments
 
+// CV PDF
+let cvMesh;
 
 init();
 
@@ -243,6 +245,50 @@ function sparklethread()
 	}
 }
 
+function addContact()
+{
+	// CV PDF
+	const texture = new THREE.TextureLoader().load("cv_icon.jpg");
+	const buttonGeometry = new THREE.CircleGeometry(15, 32);
+	const buttonMaterial = new THREE.MeshBasicMaterial({map: texture, transparent: false });
+	cvMesh = new THREE.Mesh(buttonGeometry, buttonMaterial);
+	cvMesh.position.set(-95, -165, 10); // put it in front of camera
+	scene.add(cvMesh);
+
+	// Mail
+	const loaderHeader = new FontLoader();
+		loaderHeader.load(
+			'fonts/optimer_regular.typeface.json',
+			function (font) {
+				const textGeo = new TextGeometry("mylene.benier.rollet@gmail.com", {
+					font: font,
+					size: 8,
+					depth: 1,
+					height: 0,
+					curveSegments: 8
+				});
+				textGeo.center();
+				
+				//const textMat = new THREE.MeshBasicMaterial({ color: 0xffffff });
+				const textMat = new THREE.MeshPhongMaterial({color: lightPink});
+				textMesh = new THREE.Mesh(textGeo, textMat);
+				textMesh.position.set(0, -170, 10);
+	
+				// Attach text to star so it moves/rotates with it
+				scene.add(textMesh);
+			},
+			// onProgress callback
+			function ( xhr ) {
+				console.log( (xhr.loaded / xhr.total * 100) + '% loaded' );
+			},
+			// onError callback
+			function ( err ) {
+				console.log( 'An error happened' );
+			}
+		);
+
+}
+
 function snowParticles(){
 	scene.fog = new THREE.FogExp2( 0x000000, 0.0008 );
 	const geometry = new THREE.BufferGeometry();
@@ -346,6 +392,9 @@ function init() {
 	// Thread between stars
 	sparklethread();
 
+	// PDF CV link
+	addContact();
+
 	// Raycaster setup
 	raycaster = new THREE.Raycaster();
 	mouse = new THREE.Vector2();
@@ -390,6 +439,13 @@ function onClick(event) {
 	if (interesectImg.length > 0) {
       window.location.href = "index.html"; 
     }
+
+	// CV PDF
+	const interesectCV = raycaster.intersectObjects([cvMesh]);
+	if (interesectCV.length > 0) {
+		// Open PDF in a new tab
+        window.open('/CV_Mylene_BenierRollet.pdf', '_blank');
+	}
 }
 
 function onWindowResize() {
