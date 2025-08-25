@@ -4,7 +4,21 @@ import { TrackballControls } from 'three/addons/controls/TrackballControls.js';
 import { FontLoader } from 'three/addons/loaders/FontLoader.js';
 import { TextGeometry } from 'three/addons/geometries/TextGeometry.js';
 
+// Load fonts
+let optimerBoldFont = null;
+let optimerRegularFont = null;
+const loader = new FontLoader();
+loader.load('fonts/optimer_bold.typeface.json', (font) => {
+	optimerBoldFont = font;
+	title();
+});
+loader.load('fonts/optimer_regular.typeface.json', (font) => {
+	optimerRegularFont = font;
+	addIntro();
+});
+
 let camera, scene, renderer, controls, raycaster, mouse;
+const clock = new THREE.Clock();
 
 // Colors
 let lightPink = 0xFFE3F0;
@@ -105,38 +119,21 @@ function createRoundedRectShape(width, height, radius) {
 
 function title()
 {
+	if (!optimerBoldFont) return;
 
 	// Name Title
-	const loaderHeader = new FontLoader();
-	loaderHeader.load(
-		'fonts/optimer_bold.typeface.json',
-		function (font) {
-			const textGeo = new TextGeometry("Présentation", {
-				font: font,
-				size: 20,
-				depth: 2,
-				height: 0,
-				curveSegments: 8
-			});
-			textGeo.center();
-			
-			//const textMat = new THREE.MeshBasicMaterial({ color: 0xffffff });
-			const textMat = new THREE.MeshPhongMaterial({ color: lightPink});
-			textMesh = new THREE.Mesh(textGeo, textMat);
-			textMesh.position.set(0, 100, 10);
-
-			// Attach text to star so it moves/rotates with it
-			scene.add(textMesh);
-		},
-		// onProgress callback
-		function ( xhr ) {
-			console.log( (xhr.loaded / xhr.total * 100) + '% loaded' );
-		},
-		// onError callback
-		function ( err ) {
-			console.log( 'An error happened' );
-		}
-	);
+	const textGeo = new TextGeometry("Présentation", { 	
+		font: optimerBoldFont, 
+		size: 20, 
+		depth: 2, 
+		curveSegments: 8 
+	});
+	textGeo.center();
+	const textMat = new THREE.MeshPhongMaterial({color: lightPink});
+	const textTitleMesh = new THREE.Mesh(textGeo, textMat);
+	textTitleMesh.position.set(0, 100, 10);	
+	
+	scene.add(textTitleMesh);
 }
 
 function homePageButton()
@@ -168,6 +165,8 @@ function addIntro()
 	scene.add(roundedPlaneMesh);
 
 	// Text
+	if(!optimerRegularFont) return;
+
 	const text = "Un mois après mon arrivée au Canada dans le cadre d’un échange avec mon école d’ingénieur, j’ai eu l’opportunité de\n" 
 				+ "rejoindre l’équipe pipeline de Pitch Black en tant que travailleuse à temps partiel, en parallèle de mes études à l’UQAC.\n"
 				+ "Je ne connaissais alors presque rien du monde des effets visuels et de l’animation, mais durant ces dix mois au sein du\n"
@@ -183,38 +182,18 @@ function addIntro()
 				+ "Je vous invite à consulter mon CV en ligne pour en savoir davantage sur mon parcours, mes compétences et mes passions.\n"
 				+ "Je serai ravie d’échanger avec vous, alors n’hésitez pas à me contacter !\n"
 				+ "\n Mylène";
-
-	const loaderHeader = new FontLoader();
-	loaderHeader.load(
-		'fonts/optimer_regular.typeface.json',
-		function (font) {
-			const textGeo = new TextGeometry(text, {
-				font: font,
-				size: 6.4,
-				depth: 1,
-				height: 0,
-				curveSegments: 8
-			});
-			textGeo.center();
-			
-			//const textMat = new THREE.MeshBasicMaterial({ color: 0xffffff });
-			const textMat = new THREE.MeshPhongMaterial({ color: lightPink});
-			textMesh = new THREE.Mesh(textGeo, textMat);
-			textMesh.position.set(7, -50, 10);
-
-			// Attach text to star so it moves/rotates with it
-			scene.add(textMesh);
-		},
-		// onProgress callback
-		function ( xhr ) {
-			console.log( (xhr.loaded / xhr.total * 100) + '% loaded' );
-		},
-		// onError callback
-		function ( err ) {
-			console.log( 'An error happened' );
-		}
-	);
-
+	const textGeo = new TextGeometry(text, { 	
+		font: optimerRegularFont, 
+		size: 6.4, 
+		depth: 1, 
+		curveSegments: 8 
+	});
+	textGeo.center();
+	const textMat = new THREE.MeshPhongMaterial({color: lightPink});
+	const textPresMesh = new THREE.Mesh(textGeo, textMat);
+	textPresMesh.position.set(7, -50, 10);	
+	
+	scene.add(textPresMesh);
 }
 
 function addPictures()
@@ -256,7 +235,7 @@ function sparklethread()
 	});
 
 	for (let i = 0; i < 2000; i++) {
-		const sprite = new THREE.Sprite(sparkMaterial.clone());
+		const sprite = new THREE.Sprite(sparkMaterial);
 		sprite.scale.set(1, 1, 1);
 		scene.add(sprite);
 		sparks.push({
@@ -326,6 +305,10 @@ function onClick(event) {
     }
 }
 
+
+const tmpPos = new THREE.Vector3();
+const tmpOffset = new THREE.Vector3();
+const tmpRandom = new THREE.Vector3();
 function animThreadSparkles(time){
 	sparks.forEach(s => {
 		const t = (time * 0.05 + s.offset) % 1; // move forward
@@ -340,22 +323,25 @@ function animThreadSparkles(time){
 		
 		const offset = normal.clone().add(binormal.clone());
 
-		s.sprite.position.copy(pos.clone().add(offset));
-		s.sprite.position.add(new THREE.Vector3(
+		s.sprite.position.copy(
+			tmpPos.copy(curve.getPointAt(t))
+				.add(tmpOffset.copy(normal).add(binormal))
+		);
+		tmpRandom.set(
 			(Math.random() - 0.5) * 2,
 			(Math.random() - 0.5) * 2,
 			(Math.random() - 0.5) * 2
-		));
+		);
+		s.sprite.position.add(tmpRandom);
 	});
 }
 
 function animate() {
-    requestAnimationFrame(animate);
 	controls.update();
 
-	const now = performance.now();
+	const now = clock.getDelta();
 	animThreadSparkles(now*0.005);
 
   	renderer.render(scene, camera);
 }
-renderer.setAnimationLoop( animate );
+renderer.setAnimationLoop(animate);

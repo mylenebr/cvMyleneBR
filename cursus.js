@@ -344,7 +344,6 @@ function animLogos(now){
 }
 
 function animate() {
-    requestAnimationFrame(animate);
 	controls.update();
 
 	const now = performance.now();
