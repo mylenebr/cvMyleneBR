@@ -445,7 +445,7 @@ function onClick(event) {
 	const interesectCV = raycaster.intersectObjects([cvMesh]);
 	if (interesectCV.length > 0) {
 		// Open PDF in a new tab
-        window.open('/CV_Mylene_BenierRollet.pdf', '_blank');
+        window.open('CV_Mylene_BenierRollet.pdf', '_blank');
 	}
 }
 
