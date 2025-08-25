@@ -19,7 +19,7 @@ let sparks = [];
 const leftX = -265;
 const smallRange = 10;
 const upY = 70;
-const longRange = 30;
+const longRange = 29;//30;
 const downY = -170; //170?
 const rightX = 265;
 const threadPos = [
@@ -49,7 +49,8 @@ const threadPos = [
 	new THREE.Vector3(leftX+longRange*15, downY, 10),
 	new THREE.Vector3(leftX+longRange*16, downY-smallRange, 10),
 	new THREE.Vector3(leftX+longRange*17, downY, 10),
-	new THREE.Vector3(leftX+longRange*18-10, downY-smallRange, 10),
+	new THREE.Vector3(leftX+longRange*18, downY+longRange-35, 10),
+	new THREE.Vector3(rightX+smallRange, downY+longRange-20, 10),
 	new THREE.Vector3(rightX+smallRange, downY+longRange, 10),// Right
 	new THREE.Vector3(rightX, downY+longRange*2, 10),
 	new THREE.Vector3(rightX+smallRange, downY+longRange*3, 10),
@@ -57,7 +58,8 @@ const threadPos = [
 	new THREE.Vector3(rightX+smallRange, downY+longRange*5, 10),
 	new THREE.Vector3(rightX, downY+longRange*6, 10),
 	new THREE.Vector3(rightX+smallRange, downY+longRange*7, 10),
-	new THREE.Vector3(rightX, downY+longRange*8, 10),
+	new THREE.Vector3(rightX-5, downY+longRange*8, 10),
+	new THREE.Vector3(rightX-8, downY+longRange*8+15, 10),
 	new THREE.Vector3(rightX-longRange, upY, 10), // Up
 	new THREE.Vector3(rightX-longRange*2, upY+smallRange, 10),
 	new THREE.Vector3(rightX-longRange*3, upY, 10),
@@ -166,28 +168,21 @@ function addIntro()
 	scene.add(roundedPlaneMesh);
 
 	// Text
-	const text = "1 mois apres mon arrivée au Canada dans le cadre d'un echange avec mon \n" 
-				+ "ecole d'ingenieur en informatique, j'ai trouve un travail au sein du pipeline \n"
-				+ "de Pitch Black (Folks VFX a l'epoque) a temps partiel, a cote de mes etudes que\n"
-				+ "je pursuivait a l'Universite du quebec a chicoutimi.\n"
-				+ "Je ne connaissait rien au monde des effetx visuels et de l'animation hormis \n"
-				+ "que j'aimais les regarder. Et bien que pendant ces 10 mois au sein du pipeline\n"
-				+ "je n'y touchais pas directement, j'appreciais enormement ce domaine et souhaitais\n"
-				+ "l'approfondir.\n"
-				+ "J'ai donc demande a mon superviseur si je pouvais effectuer mon stage de fin\n"
-				+ "d'etudes a leur cote mais dans l'equipe de Recherche et Developpement afin de\n"
-				+ "pouvoir approfondir mes connaissances en 3D et de mettre a profit\n"
-				+ "ma formation en mathematiques et physique. \n"
-				+ "A la fin de mon stage j'ai obtenu mes deux diplomes : Ingenieur en informatique\n"
-				+ "et reseaux (ENSISA, France), et Maitrise en informatique (UQAC, Canada), mais \n"
-				+ "je ressentais que mon aventure au Quebec n'etais pas terminee, je suis donc reste\n"
-				+ "1 an et demi de plus, toujours dans l'equipe de R&D de Pitch Black.\n"
-				+ "J'ai recemment decide de rentrer en France, et je suis actuellement a la\n"
-				+ "recherche d'un emploi dans le meme domaine pour continuer d'y apprendre et evoluer\n"
-				+ "Je vous invite a explorer mon web CV pour en apprendre plus sur moi, \n"
-				+ "mes competences, mon experiences, mes passions, etc.\n"
-				+ "Et je repondrais a vos questions avec plaisir donc n'hesitez pas a me contacter ! :)\n"
-				+ "\n Mylene" ;
+	const text = "Un mois après mon arrivée au Canada dans le cadre d’un échange avec mon école d’ingénieur, j’ai eu l’opportunité de\n" 
+				+ "rejoindre l’équipe pipeline de Pitch Black en tant que travailleuse à temps partiel, en parallèle de mes études à l’UQAC.\n"
+				+ "Je ne connaissais alors presque rien du monde des effets visuels et de l’animation, mais durant ces dix mois au sein du\n"
+				+ "pipeline, j’ai découvert une véritable passion pour ce domaine et le désir d’aller plus loin.\n"
+				+ "J’ai ainsi proposé à mon superviseur d’effectuer mon stage de fin d’études dans l’équipe de  Recherche & Développement,\n"
+				+ "afin de poursuivre mon apprentissage de la 3D tout en mettant à profit ma formation en mathématiques et en physique.\n \n"
+				+ "à l’issue de ce stage, j’ai obtenu mes deux diplômes : Ingénieur en informatique et réseaux (ENSISA, France),\n"
+				+ "et une Maîtrise en informatique (UQAC, Canada).\n"
+				+ "Sentant que mon aventure au Québec n’était pas terminée, j’ai choisi d’y rester un an et demi de plus,\n"
+				+ "toujours dans l’équipe R&D de Pitch Black.\n \n"
+				+ "Récemment, j’ai pris la décision de rentrer en France et je suis actuellement à la recherche d’un poste dans ce même\n"
+				+ "domaine, afin de continuer à apprendre, à progresser et à relever de nouveaux défis.\n \n"
+				+ "Je vous invite à consulter mon CV en ligne pour en savoir davantage sur mon parcours, mes compétences et mes passions.\n"
+				+ "Je serai ravie d’échanger avec vous, alors n’hésitez pas à me contacter !\n"
+				+ "\n Mylene";
 
 	const loaderHeader = new FontLoader();
 	loaderHeader.load(
@@ -195,7 +190,7 @@ function addIntro()
 		function (font) {
 			const textGeo = new TextGeometry(text, {
 				font: font,
-				size: 8,
+				size: 6.4,
 				depth: 1,
 				height: 0,
 				curveSegments: 8
@@ -205,7 +200,7 @@ function addIntro()
 			//const textMat = new THREE.MeshBasicMaterial({ color: 0xffffff });
 			const textMat = new THREE.MeshPhongMaterial({ color: lightPink});
 			textMesh = new THREE.Mesh(textGeo, textMat);
-			textMesh.position.set(0, 50, 10);
+			textMesh.position.set(7, -50, 10);
 
 			// Attach text to star so it moves/rotates with it
 			scene.add(textMesh);
@@ -229,7 +224,7 @@ function addPictures()
 	const uqacGeometry = new THREE.CircleGeometry(25, 32);
 	const uqacMaterial = new THREE.MeshBasicMaterial({map: textureUQAC, transparent: false });
 	const uqacMesh = new THREE.Mesh(uqacGeometry, uqacMaterial);
-	uqacMesh.position.set(-260, 40, 10); // put it in front of camera
+	uqacMesh.position.set(-260, 50, 10); // put it in front of camera
 	scene.add(uqacMesh); 
 
 	// Ensisa
@@ -237,7 +232,7 @@ function addPictures()
 	const ensisaGeometry = new THREE.CircleGeometry(25, 32);
 	const ensisaMaterial = new THREE.MeshBasicMaterial({map: textureEnsisa, transparent: false });
 	const ensisaMesh = new THREE.Mesh(ensisaGeometry, ensisaMaterial);
-	ensisaMesh.position.set(260, -20, 10); // put it in front of camera
+	ensisaMesh.position.set(250, -50, 10); // put it in front of camera
 	scene.add(ensisaMesh); 
 
 	// Canada
@@ -245,7 +240,7 @@ function addPictures()
 	const canadaGeometry = new THREE.CircleGeometry(25, 32);
 	const canadaMaterial = new THREE.MeshBasicMaterial({map: textureCanada, transparent: false });
 	const canadaMesh = new THREE.Mesh(canadaGeometry, canadaMaterial);
-	canadaMesh.position.set(-250, -140, 10); // put it in front of camera
+	canadaMesh.position.set(-250, -150, 10); // put it in front of camera
 	scene.add(canadaMesh); 
 }
 
