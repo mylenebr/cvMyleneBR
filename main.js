@@ -6,6 +6,20 @@ import { TrackballControls } from 'three/addons/controls/TrackballControls.js';
 import { FontLoader } from 'three/addons/loaders/FontLoader.js';
 import { TextGeometry } from 'three/addons/geometries/TextGeometry.js';
 
+// Load fonts
+const loader = new FontLoader();
+let optimerBoldFont = null;
+loader.load('fonts/optimer_bold.typeface.json', (font) => {
+	optimerBoldFont = font;
+	title();
+});
+let optimerRegularFont = null;
+loader.load('fonts/optimer_regular.typeface.json', (font) => {
+	optimerRegularFont = font;
+	addContact();
+});
+
+// Init variables
 let camera, scene, renderer, controls, raycaster, mouse, parameters;
 let stars = [];
 let sparks = [];
@@ -44,41 +58,33 @@ const frames = curve.computeFrenetFrames(100, true); // precompute 100 segments
 // CV PDF
 let cvMesh;
 
+// Utils
+function text(font, text, size, depth, curveSegments, color, pos)
+{
+	if (!font) return;
+
+	// Name Title
+	const textGeo = new TextGeometry(text, { 	
+		font: font, 
+		size: size, 
+		depth: depth, 
+		curveSegments: curveSegments 
+	});
+	textGeo.center();
+	const textMat = new THREE.MeshPhongMaterial({color: color});
+	const textTitleMesh = new THREE.Mesh(textGeo, textMat);
+	textTitleMesh.position.set(pos.x, pos.y, pos.z);	
+	
+	scene.add(textTitleMesh);
+}
+
 init();
 
 function title()
 {
 	// Name Title
-	const loaderHeader = new FontLoader();
-	loaderHeader.load(
-		'fonts/optimer_bold.typeface.json',
-		function (font) {
-			const textGeo = new TextGeometry("Mylène Bénier-Rollet", {
-				font: font,
-				size: 20,
-				depth: 2,
-				height: 0,
-				curveSegments: 8
-			});
-			textGeo.center();
-			
-			const textMat = new THREE.MeshPhongMaterial({color:lightPink});
-			textMesh = new THREE.Mesh(textGeo, textMat);
-			textMesh.position.set(0, 100, 10);
-
-			// Attach text to star so it moves/rotates with it
-			scene.add(textMesh);
-			textPositions = textGeo.attributes.position;
-    		originalPositions = textPositions.array.slice();
-		},
-		// onProgress callback
-		function ( xhr ) {
-			console.log( (xhr.loaded / xhr.total * 100) + '% loaded' );
-		},
-		// onError callback
-		function ( err ) {
-			console.log( 'An error happened' );
-		}
+	text(optimerBoldFont, "Mylène Bénier-Rollet", 20, 2, 8, lightPink,
+		new THREE.Vector3(0, 100, 10)
 	);
 
 	// Add sparkles around it => I dont like it after all
@@ -263,37 +269,9 @@ function addContact()
 	scene.add(frameMesh);
 
 	// Mail
-	const loaderHeader = new FontLoader();
-		loaderHeader.load(
-			'fonts/optimer_regular.typeface.json',
-			function (font) {
-				const textGeo = new TextGeometry("mylene.benier.rollet@gmail.com", {
-					font: font,
-					size: 8,
-					depth: 1,
-					height: 0,
-					curveSegments: 8
-				});
-				textGeo.center();
-				
-				//const textMat = new THREE.MeshBasicMaterial({ color: 0xffffff });
-				const textMat = new THREE.MeshPhongMaterial({color: lightPink});
-				textMesh = new THREE.Mesh(textGeo, textMat);
-				textMesh.position.set(0, -170, 10);
-	
-				// Attach text to star so it moves/rotates with it
-				scene.add(textMesh);
-			},
-			// onProgress callback
-			function ( xhr ) {
-				console.log( (xhr.loaded / xhr.total * 100) + '% loaded' );
-			},
-			// onError callback
-			function ( err ) {
-				console.log( 'An error happened' );
-			}
-		);
-
+	text(optimerRegularFont, "mylene.benier.rollet@gmail.com", 8, 1, 8, lightPink,
+		new THREE.Vector3(0, -170, 10)
+	);
 }
 
 function snowParticles(){

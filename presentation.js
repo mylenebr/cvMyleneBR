@@ -5,18 +5,19 @@ import { FontLoader } from 'three/addons/loaders/FontLoader.js';
 import { TextGeometry } from 'three/addons/geometries/TextGeometry.js';
 
 // Load fonts
-let optimerBoldFont = null;
-let optimerRegularFont = null;
 const loader = new FontLoader();
+let optimerBoldFont = null;
 loader.load('fonts/optimer_bold.typeface.json', (font) => {
 	optimerBoldFont = font;
 	title();
 });
+let optimerRegularFont = null;
 loader.load('fonts/optimer_regular.typeface.json', (font) => {
 	optimerRegularFont = font;
 	addIntro();
 });
 
+// Init variables
 let camera, scene, renderer, controls, raycaster, mouse;
 const clock = new THREE.Clock();
 
@@ -98,7 +99,7 @@ const frames = curve.computeFrenetFrames(100, true);
 
 init();
 
-// Util
+// Utils
 function createRoundedRectShape(width, height, radius) {
 	const x = -width / 2;
 	const y = -height / 2;
@@ -117,23 +118,31 @@ function createRoundedRectShape(width, height, radius) {
 	return shape;
 }
 
-function title()
+function text(font, text, size, depth, curveSegments, color, pos)
 {
-	if (!optimerBoldFont) return;
+	if (!font) return;
 
 	// Name Title
-	const textGeo = new TextGeometry("Présentation", { 	
-		font: optimerBoldFont, 
-		size: 20, 
-		depth: 2, 
-		curveSegments: 8 
+	const textGeo = new TextGeometry(text, { 	
+		font: font, 
+		size: size, 
+		depth: depth, 
+		curveSegments: curveSegments 
 	});
 	textGeo.center();
-	const textMat = new THREE.MeshPhongMaterial({color: lightPink});
+	const textMat = new THREE.MeshPhongMaterial({color: color});
 	const textTitleMesh = new THREE.Mesh(textGeo, textMat);
-	textTitleMesh.position.set(0, 100, 10);	
+	textTitleMesh.position.set(pos.x, pos.y, pos.z);	
 	
 	scene.add(textTitleMesh);
+}
+
+function title()
+{
+	// Name Title
+	text(optimerBoldFont, "Présentation", 20, 2, 8, lightPink,
+		new THREE.Vector3(0, 100, 10)
+	);
 }
 
 function homePageButton()
@@ -165,9 +174,7 @@ function addIntro()
 	scene.add(roundedPlaneMesh);
 
 	// Text
-	if(!optimerRegularFont) return;
-
-	const text = "Un mois après mon arrivée au Canada dans le cadre d’un échange avec mon école d’ingénieur, j’ai eu l’opportunité de\n" 
+	const textPres = "Un mois après mon arrivée au Canada dans le cadre d’un échange avec mon école d’ingénieur, j’ai eu l’opportunité de\n" 
 				+ "rejoindre l’équipe pipeline de Pitch Black en tant que travailleuse à temps partiel, en parallèle de mes études à l’UQAC.\n"
 				+ "Je ne connaissais alors presque rien du monde des effets visuels et de l’animation, mais durant ces dix mois au sein du\n"
 				+ "pipeline, j’ai découvert une véritable passion pour ce domaine et le désir d’aller plus loin.\n"
@@ -182,18 +189,10 @@ function addIntro()
 				+ "Je vous invite à consulter mon CV en ligne pour en savoir davantage sur mon parcours, mes compétences et mes passions.\n"
 				+ "Je serai ravie d’échanger avec vous, alors n’hésitez pas à me contacter !\n"
 				+ "\n Mylène";
-	const textGeo = new TextGeometry(text, { 	
-		font: optimerRegularFont, 
-		size: 6.4, 
-		depth: 1, 
-		curveSegments: 8 
-	});
-	textGeo.center();
-	const textMat = new THREE.MeshPhongMaterial({color: lightPink});
-	const textPresMesh = new THREE.Mesh(textGeo, textMat);
-	textPresMesh.position.set(7, -50, 10);	
-	
-	scene.add(textPresMesh);
+
+	text(optimerRegularFont, textPres, 6.4, 1, 8, lightPink,
+		new THREE.Vector3(7, -50, 10)
+	);
 }
 
 function addPictures()

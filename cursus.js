@@ -4,6 +4,16 @@ import { TrackballControls } from 'three/addons/controls/TrackballControls.js';
 import { FontLoader } from 'three/addons/loaders/FontLoader.js';
 import { TextGeometry } from 'three/addons/geometries/TextGeometry.js';
 
+// Load fonts
+const loader = new FontLoader();
+let optimerBoldFont = null;
+loader.load('fonts/optimer_bold.typeface.json', (font) => {
+	optimerBoldFont = font;
+	title();
+	createDates();
+});
+
+// Init variables
 let camera, scene, renderer, controls, raycaster, mouse;
 
 // Colors
@@ -68,41 +78,34 @@ let logos = [];
 let logoFrames = [];
 let logoMesh;
 
+// Utils
+function text(font, text, size, depth, curveSegments, color, pos)
+{
+	if (!font) return;
+
+	// Name Title
+	const textGeo = new TextGeometry(text, { 	
+		font: font, 
+		size: size, 
+		depth: depth, 
+		curveSegments: curveSegments 
+	});
+	textGeo.center();
+	const textMat = new THREE.MeshPhongMaterial({color: color});
+	const textTitleMesh = new THREE.Mesh(textGeo, textMat);
+	textTitleMesh.position.set(pos.x, pos.y, pos.z);	
+	
+	scene.add(textTitleMesh);
+}
+
 init();
 
 function title()
 {
 
 	// Name Title
-	const loaderHeader = new FontLoader();
-	loaderHeader.load(
-		'fonts/optimer_bold.typeface.json',
-		function (font) {
-			const textGeo = new TextGeometry("Cursus", {
-				font: font,
-				size: 20,
-				depth: 2,
-				height: 0,
-				curveSegments: 8
-			});
-			textGeo.center();
-			
-			//const textMat = new THREE.MeshBasicMaterial({ color: 0xffffff });
-			const textMat = new THREE.MeshPhongMaterial({ color: lightPink});
-			textMesh = new THREE.Mesh(textGeo, textMat);
-			textMesh.position.set(0, 100, 10);
-
-			// Attach text to star so it moves/rotates with it
-			scene.add(textMesh);
-		},
-		// onProgress callback
-		function ( xhr ) {
-			console.log( (xhr.loaded / xhr.total * 100) + '% loaded' );
-		},
-		// onError callback
-		function ( err ) {
-			console.log( 'An error happened' );
-		}
+	text(optimerBoldFont, "Cursus", 20, 2, 8, lightPink,
+		new THREE.Vector3(0, 100, 10)
 	);
 }
 
@@ -149,35 +152,7 @@ function sparklethread()
 function createDates()
 {
 	for(let i = 0; i < 4; i++) {
-		const loaderHeader = new FontLoader();
-		loaderHeader.load(
-			'fonts/optimer_bold.typeface.json',
-			function (font) {
-				const textGeo = new TextGeometry(years[i], {
-					font: font,
-					size: 10,
-					depth: 1,
-					height: 0,
-					curveSegments: 8
-				});
-				textGeo.center();
-				
-				const textMat = new THREE.MeshPhongMaterial({color:lightPink});
-				textMesh = new THREE.Mesh(textGeo, textMat);
-				textMesh.position.set(yearsPos[i].x, yearsPos[i].y, yearsPos[i].z);
-
-				// Attach text to star so it moves/rotates with it
-				scene.add(textMesh);
-			},
-			// onProgress callback
-			function ( xhr ) {
-				console.log( (xhr.loaded / xhr.total * 100) + '% loaded' );
-			},
-			// onError callback
-			function ( err ) {
-				console.log( 'An error happened' );
-			}
-		);
+		text(optimerBoldFont, years[i], 10, 1, 8, lightPink, yearsPos[i]);
 	}
 }
 

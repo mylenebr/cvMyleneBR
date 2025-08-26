@@ -4,6 +4,23 @@ import { TrackballControls } from 'three/addons/controls/TrackballControls.js';
 import { FontLoader } from 'three/addons/loaders/FontLoader.js';
 import { TextGeometry } from 'three/addons/geometries/TextGeometry.js';
 
+// Load fonts
+const loader = new FontLoader();
+let optimerBoldFont = null;
+loader.load('fonts/optimer_bold.typeface.json', (font) => {
+	optimerBoldFont = font;
+	title();
+});
+let optimerRegularFont = null;
+loader.load('fonts/optimer_regular.typeface.json', (font) => {
+	optimerRegularFont = font;
+	addBooks();
+	addAsso();
+	addSpanish();
+	addMusic();
+});
+
+// Init variables
 let camera, scene, renderer, controls, raycaster, mouse;
 
 // Colors
@@ -48,74 +65,31 @@ function createRoundedRectShape(width, height, radius) {
 	return shape;
 }
 
-function addText(text, size, depth, height, curveSegments,
-	color, pos)
+function text(font, text, size, depth, curveSegments, color, pos)
 {
-	const loaderHeader = new FontLoader();
-	loaderHeader.load(
-		'fonts/optimer_regular.typeface.json',
-		function (font) {
-			const textGeo = new TextGeometry(text, {
-				font: font,
-				size: size,
-				depth: depth,
-				height: height,
-				curveSegments: curveSegments
-			});
-			textGeo.center();
-			
-			//const textMat = new THREE.MeshBasicMaterial({ color: 0xffffff });
-			const textMat = new THREE.MeshPhongMaterial({color: color});
-			textMesh = new THREE.Mesh(textGeo, textMat);
-			textMesh.position.set(pos.x, pos.y, pos.z);
+	if (!font) return;
 
-			// Attach text to star so it moves/rotates with it
-			scene.add(textMesh);
-		},
-		// onProgress callback
-		function ( xhr ) {
-			console.log( (xhr.loaded / xhr.total * 100) + '% loaded' );
-		},
-		// onError callback
-		function ( err ) {
-			console.log( 'An error happened' );
-		}
-	);
+	// Name Title
+	const textGeo = new TextGeometry(text, { 	
+		font: font, 
+		size: size, 
+		depth: depth, 
+		curveSegments: curveSegments 
+	});
+	textGeo.center();
+	const textMat = new THREE.MeshPhongMaterial({color: color});
+	const textTitleMesh = new THREE.Mesh(textGeo, textMat);
+	textTitleMesh.position.set(pos.x, pos.y, pos.z);	
+	
+	scene.add(textTitleMesh);
 }
 
 function title()
 {
 
 	// Name Title
-	const loaderHeader = new FontLoader();
-	loaderHeader.load(
-		'fonts/optimer_bold.typeface.json',
-		function (font) {
-			const textGeo = new TextGeometry("Intérêts", {
-				font: font,
-				size: 20,
-				depth: 2,
-				height: 0,
-				curveSegments: 8
-			});
-			textGeo.center();
-			
-			//const textMat = new THREE.MeshBasicMaterial({ color: 0xffffff });
-			const textMat = new THREE.MeshPhongMaterial({ color: lightPink });
-			textMesh = new THREE.Mesh(textGeo, textMat);
-			textMesh.position.set(0, 100, 10);
-
-			// Attach text to star so it moves/rotates with it
-			scene.add(textMesh);
-		},
-		// onProgress callback
-		function ( xhr ) {
-			console.log( (xhr.loaded / xhr.total * 100) + '% loaded' );
-		},
-		// onError callback
-		function ( err ) {
-			console.log( 'An error happened' );
-		}
+	text(optimerBoldFont, "Intérêts", 20, 2, 8, lightPink,
+		new THREE.Vector3(0, 100, 10)
 	);
 }
 
@@ -164,7 +138,9 @@ function addMusic()
 				+ "sur scène ou dans ma chambre, \n"
 				+ "tout ce qui y est attrait \n"
 				+ "me fais vibrer.";
-	addText(musicText, 8, 1, 0, 8, lightPink, new THREE.Vector3(-250, -65, 10));
+	text(optimerRegularFont, musicText, 8, 1, 8, lightPink,
+		new THREE.Vector3(-250, -65, 10)
+	);
 }
 
 function addBooks()
@@ -191,7 +167,9 @@ function addBooks()
 				+ "d'attente ? J'ai toujours un \n"
 				+ "livre dans mon sac à sortir \n" 
 				+ "pour le combler !";
-	addText(booksText, 7, 1, 0, 8, lightPink, new THREE.Vector3(-10, -12, 10));
+	text(optimerRegularFont, booksText, 7, 1, 8, lightPink,
+		new THREE.Vector3(-10, -12, 10)
+	);
 }
 
 function addAsso()
@@ -219,7 +197,9 @@ function addAsso()
 				+ "Et tout au long de mes études j'ai \n"
 				+ "participé à plusieurs clubs \n"
 				+ "sportifs et musicaux.";
-	addText(musicText, 6, 1, 0, 8, lightPink, new THREE.Vector3(-10, -112, 10));
+	text(optimerRegularFont, musicText, 6, 1, 8, lightPink,
+		new THREE.Vector3(-10, -112, 10)
+	);
 }
 
 function addSpanish()
@@ -252,7 +232,9 @@ function addSpanish()
 				+ "en particulier (vous l'aurez peut-être \n"
 				+ "deviné) la musique \n"
 				+ "hispanophone !";
-	addText(spainText, 7, 1, 0, 8, lightPink, new THREE.Vector3(250, -60, 10));
+	text(optimerRegularFont, spainText, 7, 1, 8, lightPink,
+		new THREE.Vector3(250, -60, 10)
+	);
 }
 
 function sparklethread()

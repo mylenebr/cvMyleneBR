@@ -4,6 +4,24 @@ import { TrackballControls } from 'three/addons/controls/TrackballControls.js';
 import { FontLoader } from 'three/addons/loaders/FontLoader.js';
 import { TextGeometry } from 'three/addons/geometries/TextGeometry.js';
 
+// Load fonts
+const loader = new FontLoader();
+let optimerBoldFont = null;
+loader.load('fonts/optimer_bold.typeface.json', (font) => {
+	optimerBoldFont = font;
+	title();
+	addQualities();
+	addLanguages();
+	addProgLang();
+});
+let optimerRegularFont = null;
+loader.load('fonts/optimer_regular.typeface.json', (font) => {
+	optimerRegularFont = font;
+	addQualities();
+	addLanguages();
+});
+
+// Init variables
 let camera, scene, renderer, controls, raycaster, mouse;
 
 // Colors
@@ -95,7 +113,7 @@ const frames = curve.computeFrenetFrames(100, true);
 
 init();
 
-// Util
+// Utils
 function createRoundedRectShape(width, height, radius) {
     const x = -width / 2;
     const y = -height / 2;
@@ -112,6 +130,25 @@ function createRoundedRectShape(width, height, radius) {
     shape.quadraticCurveTo(x, y, x + radius, y);
 
     return shape;
+}
+
+function text(font, text, size, depth, curveSegments, color, pos)
+{
+	if (!font) return;
+
+	// Name Title
+	const textGeo = new TextGeometry(text, { 	
+		font: font, 
+		size: size, 
+		depth: depth, 
+		curveSegments: curveSegments 
+	});
+	textGeo.center();
+	const textMat = new THREE.MeshPhongMaterial({color: color});
+	const textTitleMesh = new THREE.Mesh(textGeo, textMat);
+	textTitleMesh.position.set(pos.x, pos.y, pos.z);	
+	
+	scene.add(textTitleMesh);
 }
 
 
@@ -143,37 +180,9 @@ function createStar(pos)
 // dans 'addProgLang'
 function title()
 {
-
 	// Name Title
-	const loaderHeader = new FontLoader();
-	loaderHeader.load(
-		'fonts/optimer_bold.typeface.json',
-		function (font) {
-			const textGeo = new TextGeometry("Compétences", {
-				font: font,
-				size: 20,
-				depth: 2,
-				height: 0,
-				curveSegments: 8
-			});
-			textGeo.center();
-			
-			//const textMat = new THREE.MeshBasicMaterial({ color: 0xffffff });
-			const textMat = new THREE.MeshPhongMaterial({ color: lightPink});
-			textMesh = new THREE.Mesh(textGeo, textMat);
-			textMesh.position.set(0, 100, 10);
-
-			// Attach text to star so it moves/rotates with it
-			scene.add(textMesh);
-		},
-		// onProgress callback
-		function ( xhr ) {
-			console.log( (xhr.loaded / xhr.total * 100) + '% loaded' );
-		},
-		// onError callback
-		function ( err ) {
-			console.log( 'An error happened' );
-		}
+	text(optimerBoldFont, "Compétences", 20, 2, 8, lightPink,
+		new THREE.Vector3(0, 100, 10)
 	);
 }
 
@@ -206,35 +215,8 @@ function addProgLang()
 	scene.add(roundedPlaneMesh);
 
 	// Title
-	const loaderHeader = new FontLoader();
-	loaderHeader.load(
-		'fonts/optimer_bold.typeface.json',
-		function (font) {
-			const textGeo = new TextGeometry("LANGAGES INFORMATIQUES", {
-				font: font,
-				size: 8,
-				depth: 1,
-				height: 0,
-				curveSegments: 8
-			});
-			textGeo.center();
-			
-			//const textMat = new THREE.MeshBasicMaterial({ color: 0xffffff });
-			const textMat = new THREE.MeshPhongMaterial({ color: lightPink});
-			textMesh = new THREE.Mesh(textGeo, textMat);
-			textMesh.position.set(-250, 55, 10);
-
-			// Attach text to star so it moves/rotates with it
-			scene.add(textMesh);
-		},
-		// onProgress callback
-		function ( xhr ) {
-			console.log( (xhr.loaded / xhr.total * 100) + '% loaded' );
-		},
-		// onError callback
-		function ( err ) {
-			console.log( 'An error happened' );
-		}
+	text(optimerBoldFont, "LANGAGES INFORMATIQUES", 8, 1, 8, lightPink,
+		new THREE.Vector3(-250, 55, 10)
 	);
 
 	// Logos
@@ -267,35 +249,8 @@ function addQualities()
 	scene.add(roundedPlaneMesh);
 
 	// Title
-	const loaderHeader = new FontLoader();
-	loaderHeader.load(
-		'fonts/optimer_bold.typeface.json',
-		function (font) {
-			const textGeo = new TextGeometry("QUALITÉS", {
-				font: font,
-				size: 8,
-				depth: 1,
-				height: 0,
-				curveSegments: 8
-			});
-			textGeo.center();
-			
-			//const textMat = new THREE.MeshBasicMaterial({ color: 0xffffff });
-			const textMat = new THREE.MeshPhongMaterial({ color: lightPink});
-			textMesh = new THREE.Mesh(textGeo, textMat);
-			textMesh.position.set(0, 55, 10);
-
-			// Attach text to star so it moves/rotates with it
-			scene.add(textMesh);
-		},
-		// onProgress callback
-		function ( xhr ) {
-			console.log( (xhr.loaded / xhr.total * 100) + '% loaded' );
-		},
-		// onError callback
-		function ( err ) {
-			console.log( 'An error happened' );
-		}
+	text(optimerBoldFont, "QUALITÉS", 8, 1, 8, lightPink,
+		new THREE.Vector3(0, 55, 10)
 	);
 
 	// Text
@@ -306,35 +261,8 @@ function addQualities()
 					+ "sens de l'analyse et \n" 
 					+ "un goût prononcé pour \n"
 					+ "les travaux en équipes.";
-	const loaderText = new FontLoader();
-	loaderText.load(
-		'fonts/optimer_regular.typeface.json',
-		function (font) {
-			const textGeo = new TextGeometry(qualityPres, {
-				font: font,
-				size: 10,
-				depth: 1,
-				height: 0,
-				curveSegments: 8
-			});
-			textGeo.center();
-			
-			//const textMat = new THREE.MeshBasicMaterial({ color: 0xffffff });
-			const textMat = new THREE.MeshPhongMaterial({ color: lightPink});
-			textMesh = new THREE.Mesh(textGeo, textMat);
-			textMesh.position.set(0, -50, 10);
-
-			// Attach text to star so it moves/rotates with it
-			scene.add(textMesh);
-		},
-		// onProgress callback
-		function ( xhr ) {
-			console.log( (xhr.loaded / xhr.total * 100) + '% loaded' );
-		},
-		// onError callback
-		function ( err ) {
-			console.log( 'An error happened' );
-		}
+	text(optimerRegularFont, qualityPres, 10, 1, 8, lightPink,
+		new THREE.Vector3(0, -50, 10)
 	);
 }
 
@@ -351,35 +279,8 @@ function addLanguages()
 	}
 
 	// Title
-	const loaderHeader = new FontLoader();
-	loaderHeader.load(
-		'fonts/optimer_bold.typeface.json',
-		function (font) {
-			const textGeo = new TextGeometry("LANGUES", {
-				font: font,
-				size: 8,
-				depth: 1,
-				height: 0,
-				curveSegments: 8
-			});
-			textGeo.center();
-			
-			//const textMat = new THREE.MeshBasicMaterial({ color: 0xffffff });
-			const textMat = new THREE.MeshPhongMaterial({ color: lightPink});
-			textMesh = new THREE.Mesh(textGeo, textMat);
-			textMesh.position.set(250, 55, 10);
-
-			// Attach text to star so it moves/rotates with it
-			scene.add(textMesh);
-		},
-		// onProgress callback
-		function ( xhr ) {
-			console.log( (xhr.loaded / xhr.total * 100) + '% loaded' );
-		},
-		// onError callback
-		function ( err ) {
-			console.log( 'An error happened' );
-		}
+	text(optimerBoldFont, "LANGUES", 8, 1, 8, lightPink,
+		new THREE.Vector3(250, 55, 10)
 	);
 
 	// Flags
@@ -408,35 +309,8 @@ function addLanguages()
 	const xLang = [250, 260, 250];
 	for(let i=0; i<3; i++)
 	{
-		const loaderText = new FontLoader();
-		loaderText.load(
-			'fonts/optimer_regular.typeface.json',
-			function (font) {
-				const textGeo = new TextGeometry(spokenLang[i], {
-					font: font,
-					size: 6,
-					depth: 1,
-					height: 0,
-					curveSegments: 8
-				});
-				textGeo.center();
-				
-				//const textMat = new THREE.MeshBasicMaterial({ color: 0xffffff });
-				const textMat = new THREE.MeshPhongMaterial({ color: lightPink});
-				textMesh = new THREE.Mesh(textGeo, textMat);
-				textMesh.position.set(xLang[i], yFlags[i], 10);
-
-				// Attach text to star so it moves/rotates with it
-				scene.add(textMesh);
-			},
-			// onProgress callback
-			function ( xhr ) {
-				console.log( (xhr.loaded / xhr.total * 100) + '% loaded' );
-			},
-			// onError callback
-			function ( err ) {
-				console.log( 'An error happened' );
-			}
+		text(optimerRegularFont, spokenLang[i], 6, 1, 8, lightPink,
+			new THREE.Vector3(xLang[i], yFlags[i], 10)
 		);
 	}
 }
