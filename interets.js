@@ -22,6 +22,7 @@ loader.load('fonts/optimer_regular.typeface.json', (font) => {
 
 // Init variables
 let camera, scene, renderer, controls, raycaster, mouse;
+const clock = new THREE.Clock();
 
 // Colors
 let lightPink = 0xFFE3F0;
@@ -86,7 +87,6 @@ function text(font, text, size, depth, curveSegments, color, pos)
 
 function title()
 {
-
 	// Name Title
 	text(optimerBoldFont, "Intérêts", 20, 2, 8, lightPink,
 		new THREE.Vector3(0, 100, 10)
@@ -349,7 +349,7 @@ function animThreadSparkles(time){
 function animate() {
 	controls.update();
 
-	const now = performance.now();
+	const now = clock.getDelta();
 	animThreadSparkles(now*0.005);
 
   	renderer.render(scene, camera);

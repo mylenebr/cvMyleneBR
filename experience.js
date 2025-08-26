@@ -15,6 +15,7 @@ loader.load('fonts/optimer_bold.typeface.json', (font) => {
 
 // Init variables
 let camera, scene, renderer, controls, raycaster, mouse;
+const clock = new THREE.Clock();
 
 // Colors
 let lightPink = 0xFFE3F0;
@@ -336,11 +337,10 @@ function animLogos(now){
 function animate() {
 	controls.update();
 
-	const now = performance.now();
-	const time = now * 0.0005;
+	const now = clock.getDelta();
 
 	// Animate thread sparkles
-	animThreadSparkles(time);
+	animThreadSparkles(now * 0.0005);
 
 	// Animate logos
 	animLogos(now);

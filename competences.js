@@ -23,6 +23,7 @@ loader.load('fonts/optimer_regular.typeface.json', (font) => {
 
 // Init variables
 let camera, scene, renderer, controls, raycaster, mouse;
+const clock = new THREE.Clock();
 
 // Colors
 let lightPink = 0xFFE3F0;
@@ -450,7 +451,7 @@ function animThreadSparkles(time){
 function animate() {
 	controls.update();
 
-	const now = performance.now();
+	const now = clock.getDelta();
 
 	//animLogos(now);
 
