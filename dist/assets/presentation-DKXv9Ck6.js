@@ -10,8 +10,8 @@ et une Maîtrise en informatique (UQAC, Canada).
 Sentant que mon aventure au Québec n’était pas terminée, j’ai choisi d’y rester un an et demi de plus,
 toujours dans l’équipe R&D de Pitch Black.
  
-Récemment, j’ai pris la décision de rentrer en France et je suis actuellement à la recherche d’un poste dans ce même
-domaine, afin de continuer à apprendre, à progresser et à relever de nouveaux défis.
+Récemment, j’ai pris la décision de rentrer en France et je suis actuellement à la recherche d’un nouveau poste
+afin de continuer à apprendre, à progresser et à relever de nouveaux défis.
  
 Je vous invite à consulter mon CV en ligne pour en savoir davantage sur mon parcours, mes compétences et mes passions.
 Je serai ravie d’échanger avec vous, alors n’hésitez pas à me contacter !
