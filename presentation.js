@@ -185,7 +185,7 @@ function addIntro()
 				+ "Sentant que mon aventure au Québec n’était pas terminée, j’ai choisi d’y rester un an et demi de plus,\n"
 				+ "toujours dans l’équipe R&D de Pitch Black.\n \n"
 				+ "Récemment, j’ai pris la décision de rentrer en France et je suis actuellement à la recherche d’un nouveau poste\n"
-				+ "afin de continuer à apprendre, à progresser et à relever de nouveaux défis.\n \n"
+				+ "afin de continuer à apprendre, progresser et relever de nouveaux défis.\n \n"
 				+ "Je vous invite à consulter mon CV en ligne pour en savoir davantage sur mon parcours, mes compétences et mes passions.\n"
 				+ "Je serai ravie d’échanger avec vous, alors n’hésitez pas à me contacter !\n"
 				+ "\n Mylène";
