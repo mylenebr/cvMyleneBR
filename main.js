@@ -267,11 +267,6 @@ function addContact()
 	frameMesh = new THREE.Mesh(frameGeometry, frameMaterial);
 	frameMesh.position.set(-95, -165, 9.9); // put it in front of camera
 	scene.add(frameMesh);
-
-	// Mail
-	text(optimerRegularFont, "mylene.benier.rollet@gmail.com", 8, 1, 8, lightPink,
-		new THREE.Vector3(0, -170, 10)
-	);
 }
 
 function snowParticles(){
